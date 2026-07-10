@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#1D4ED8"
+        android:pathData="M0,0h108v108h-108z" />
+    <!-- Graduation cap -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,30L18,45l36,15l30,-12.5V70h6V45L54,30z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M32,57.5V70c0,5 10,10 22,10s22,-5 22,-10V57.5L54,66.5L32,57.5z" />
+</vector>
