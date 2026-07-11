@@ -12,30 +12,36 @@ import javax.inject.Singleton
 class StudentRepository @Inject constructor(
     private val api: ApiService,
 ) {
-    suspend fun page(page: Int, size: Int = 20): Outcome<PageResponse<Student>> =
-        safeApiCall { api.students(page, size) }
+    suspend fun page(
+        page: Int,
+        size: Int = 20,
+        name: String? = null,
+        rollNo: String? = null,
+        studentClass: String? = null,
+    ): Outcome<PageResponse<Student>> =
+        safeApiCall { api.students(page, size, name, rollNo, studentClass) }
 
     suspend fun byId(id: String): Outcome<Student> = safeApiCall { api.student(id) }
 
     suspend fun myChildren(): Outcome<List<Student>> = safeApiCall { api.myChildren() }
 
     /**
-     * Students of one class+section. The API has no class filter, so this pages
-     * through the directory and filters client-side (same as the web app).
+     * Students of one class+section, for the attendance marking grid. The backend's
+     * `studentClass` filter narrows most of the way server-side; section still needs a
+     * client-side pass since there's no server-side section filter (D3 only added
+     * name/rollNo/class).
      */
     suspend fun allInClass(studentClass: String, section: String): Outcome<List<Student>> =
         safeApiCall {
             val all = mutableListOf<Student>()
             var page = 0
             while (true) {
-                val res = api.students(page, 100)
+                val res = api.students(page, 100, studentClass = studentClass)
                 all += res.content
                 if (res.last || res.content.isEmpty() || page >= 50) break
                 page++
             }
-            all.filter {
-                it.studentClass.equals(studentClass, ignoreCase = true) &&
-                    it.section.equals(section, ignoreCase = true)
-            }.sortedBy { it.rollNo }
+            all.filter { it.section.equals(section, ignoreCase = true) }
+                .sortedBy { it.rollNo }
         }
 }

@@ -3,22 +3,45 @@ package com.school.app.data.remote
 import com.school.app.domain.model.Attendance
 import com.school.app.domain.model.AttendanceMarkRequest
 import com.school.app.domain.model.AuthResponse
+import com.school.app.domain.model.Conversation
+import com.school.app.domain.model.ConversationContact
+import com.school.app.domain.model.ConversationCreateRequest
+import com.school.app.domain.model.EventCreateRequest
+import com.school.app.domain.model.EventRsvpDto
+import com.school.app.domain.model.EventRsvpRequest
 import com.school.app.domain.model.ExamResult
+import com.school.app.domain.model.Message
+import com.school.app.domain.model.MessageCreateRequest
 import com.school.app.domain.model.Fee
 import com.school.app.domain.model.Homework
 import com.school.app.domain.model.HomeworkCreateRequest
+import com.school.app.domain.model.HomeworkSubmission
+import com.school.app.domain.model.HomeworkSubmissionGradeRequest
+import com.school.app.domain.model.LeaveRequest
+import com.school.app.domain.model.LeaveRequestCreateRequest
+import com.school.app.domain.model.LeaveRequestReviewRequest
 import com.school.app.domain.model.LoginRequest
 import com.school.app.domain.model.Notice
 import com.school.app.domain.model.PageResponse
+import com.school.app.domain.model.PaymentInitiateRequest
+import com.school.app.domain.model.PaymentInitiateResponse
 import com.school.app.domain.model.RefreshRequest
+import com.school.app.domain.model.SchoolEvent
 import com.school.app.domain.model.Student
 import com.school.app.domain.model.TimetableEntry
 import com.school.app.domain.model.User
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Multipart
+import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.Streaming
 
 /** Retrofit mirror of the backend REST contract (base path /api/v1/). */
 interface ApiService {
@@ -35,6 +58,9 @@ interface ApiService {
     suspend fun students(
         @Query("page") page: Int,
         @Query("size") size: Int,
+        @Query("name") name: String? = null,
+        @Query("rollNo") rollNo: String? = null,
+        @Query("studentClass") studentClass: String? = null,
     ): PageResponse<Student>
 
     @GET("students/my-children")
@@ -76,9 +102,37 @@ interface ApiService {
     @POST("homework")
     suspend fun createHomework(@Body body: HomeworkCreateRequest): Homework
 
+    @Multipart
+    @POST("homework/{homeworkId}/submissions")
+    suspend fun submitHomework(
+        @Path("homeworkId") homeworkId: String,
+        @Part("studentId") studentId: RequestBody,
+        @Part file: MultipartBody.Part,
+    ): HomeworkSubmission
+
+    @PATCH("homework/submissions/{id}")
+    suspend fun gradeHomeworkSubmission(
+        @Path("id") id: String,
+        @Body body: HomeworkSubmissionGradeRequest,
+    ): HomeworkSubmission
+
+    @GET("homework/{homeworkId}/submissions")
+    suspend fun submissionsByHomework(@Path("homeworkId") homeworkId: String): List<HomeworkSubmission>
+
+    @GET("homework/submissions/student/{studentId}")
+    suspend fun submissionsByStudent(@Path("studentId") studentId: String): List<HomeworkSubmission>
+
+    @Streaming
+    @GET("homework/submissions/{id}/file")
+    suspend fun downloadSubmissionFile(@Path("id") id: String): ResponseBody
+
     // --- Exam results ---
     @GET("exam-results/student/{studentId}")
     suspend fun examResults(@Path("studentId") studentId: String): List<ExamResult>
+
+    @Streaming
+    @GET("exam-results/student/{studentId}/report-card")
+    suspend fun reportCard(@Path("studentId") studentId: String): ResponseBody
 
     // --- Notices ---
     @GET("notices")
@@ -90,6 +144,56 @@ interface ApiService {
     // --- Fees ---
     @GET("fees/student/{studentId}")
     suspend fun feesForStudent(@Path("studentId") studentId: String): List<Fee>
+
+    // --- Payments ---
+    @POST("payments/initiate")
+    suspend fun initiatePayment(@Body body: PaymentInitiateRequest): PaymentInitiateResponse
+
+    // --- Leave requests ---
+    @GET("leave-requests")
+    suspend fun leaveRequests(
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("status") status: String? = null,
+    ): PageResponse<LeaveRequest>
+
+    @POST("leave-requests")
+    suspend fun createLeaveRequest(@Body body: LeaveRequestCreateRequest): LeaveRequest
+
+    @PATCH("leave-requests/{id}")
+    suspend fun reviewLeaveRequest(
+        @Path("id") id: String,
+        @Body body: LeaveRequestReviewRequest,
+    ): LeaveRequest
+
+    // --- Messaging ---
+    @POST("conversations")
+    suspend fun startConversation(@Body body: ConversationCreateRequest): Conversation
+
+    @GET("conversations")
+    suspend fun conversations(): List<Conversation>
+
+    @GET("conversations/contacts")
+    suspend fun conversationContacts(): List<ConversationContact>
+
+    @POST("conversations/{id}/messages")
+    suspend fun sendMessage(@Path("id") conversationId: String, @Body body: MessageCreateRequest): Message
+
+    @GET("conversations/{id}/messages")
+    suspend fun messages(@Path("id") conversationId: String): List<Message>
+
+    // --- Events ---
+    @GET("events")
+    suspend fun events(@Query("range") range: Int): List<SchoolEvent>
+
+    @POST("events")
+    suspend fun createEvent(@Body body: EventCreateRequest): SchoolEvent
+
+    @POST("events/{id}/rsvp")
+    suspend fun rsvpEvent(@Path("id") id: String, @Body body: EventRsvpRequest): EventRsvpDto
+
+    @GET("events/{id}/rsvps")
+    suspend fun eventRsvps(@Path("id") id: String): List<EventRsvpDto>
 }
 
 /**

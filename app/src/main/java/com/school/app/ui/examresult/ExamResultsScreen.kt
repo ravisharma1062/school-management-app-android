@@ -1,5 +1,6 @@
 package com.school.app.ui.examresult
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,16 +10,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.school.app.BuildConfig
 import com.school.app.domain.model.ExamResult
 import com.school.app.ui.common.AppTopBar
 import com.school.app.ui.common.CenteredLoading
@@ -38,16 +44,48 @@ fun ExamResultsScreen(
     } else {
         "Exam Results"
     }
+    val context = LocalContext.current
+
+    LaunchedEffect(viewModel.downloadedFile) {
+        val file = viewModel.downloadedFile ?: return@LaunchedEffect
+        val uri = FileProvider.getUriForFile(context, "${BuildConfig.APPLICATION_ID}.fileprovider", file)
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "application/pdf"
+            putExtra(Intent.EXTRA_STREAM, uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        context.startActivity(Intent.createChooser(intent, "Share report card"))
+        viewModel.consumeDownloadedFile()
+    }
+
     Scaffold(topBar = { AppTopBar(title, onBack) }) { padding ->
-        Box(Modifier.padding(padding)) {
-            when (val state = viewModel.state) {
-                UiState.Loading -> CenteredLoading()
-                is UiState.Error -> ErrorState(state.message, onRetry = viewModel::load)
-                is UiState.Ready -> {
-                    if (state.data.isEmpty()) {
-                        EmptyState("No exam results published yet")
-                    } else {
-                        ResultsList(state.data)
+        Column(Modifier.padding(padding)) {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                viewModel.downloadError?.let {
+                    Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1f))
+                }
+                Button(
+                    onClick = viewModel::downloadReportCard,
+                    enabled = !viewModel.downloading,
+                ) { Text(if (viewModel.downloading) "Downloading…" else "Download report card") }
+            }
+
+            Box(Modifier.weight(1f)) {
+                when (val state = viewModel.state) {
+                    UiState.Loading -> CenteredLoading()
+                    is UiState.Error -> ErrorState(state.message, onRetry = viewModel::load)
+                    is UiState.Ready -> {
+                        if (state.data.isEmpty()) {
+                            EmptyState("No exam results published yet")
+                        } else {
+                            ResultsList(state.data)
+                        }
                     }
                 }
             }

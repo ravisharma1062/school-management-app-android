@@ -31,6 +31,10 @@ class StudentsViewModel @Inject constructor(
     var state by mutableStateOf(State())
         private set
 
+    var nameFilter by mutableStateOf("")
+    var rollNoFilter by mutableStateOf("")
+    var classFilter by mutableStateOf("")
+
     init {
         refresh()
     }
@@ -48,7 +52,13 @@ class StudentsViewModel @Inject constructor(
 
     private fun loadPage(page: Int) {
         viewModelScope.launch {
-            when (val result = studentRepository.page(page)) {
+            val result = studentRepository.page(
+                page = page,
+                name = nameFilter.trim().ifBlank { null },
+                rollNo = rollNoFilter.trim().ifBlank { null },
+                studentClass = classFilter.trim().ifBlank { null },
+            )
+            when (result) {
                 is Outcome.Success -> state = state.copy(
                     items = if (page == 0) result.data.content else state.items + result.data.content,
                     loading = false,

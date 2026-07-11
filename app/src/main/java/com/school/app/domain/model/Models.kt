@@ -11,6 +11,10 @@ enum class AttendanceStatus { PRESENT, ABSENT, LATE, EXCUSED }
 
 enum class FeeStatus { PENDING, PARTIAL, PAID, OVERDUE }
 
+enum class LeaveType { SICK, CASUAL, OTHER }
+
+enum class LeaveStatus { PENDING, APPROVED, REJECTED }
+
 // --- Auth ---
 data class LoginRequest(val email: String, val password: String)
 
@@ -35,6 +39,7 @@ data class Student(
     val section: String,
     val dob: String, // yyyy-MM-dd
     val parentId: String? = null,
+    val active: Boolean = true,
 )
 
 // --- Attendance ---
@@ -61,6 +66,7 @@ data class TimetableEntry(
     val period: Int,
     val subject: String,
     val teacherId: String,
+    val active: Boolean = true,
 )
 
 // --- Homework ---
@@ -85,6 +91,26 @@ data class HomeworkCreateRequest(
     val dueDate: String,
 )
 
+// --- Homework submissions ---
+enum class HomeworkSubmissionStatus { SUBMITTED, GRADED }
+
+data class HomeworkSubmission(
+    val id: String,
+    val homeworkId: String,
+    val studentId: String,
+    val fileName: String,
+    val contentType: String,
+    val status: HomeworkSubmissionStatus,
+    val teacherFeedback: String? = null,
+    val grade: String? = null,
+    val submittedAt: String,
+)
+
+data class HomeworkSubmissionGradeRequest(
+    val teacherFeedback: String? = null,
+    val grade: String,
+)
+
 // --- Exam results ---
 data class ExamResult(
     val id: String,
@@ -105,6 +131,31 @@ data class Notice(
     val targetRole: TargetRole,
     val createdBy: String,
     val createdAt: String,
+    val active: Boolean = true,
+)
+
+// --- Leave requests ---
+data class LeaveRequest(
+    val id: String,
+    val requesterId: String,
+    val type: LeaveType,
+    val fromDate: String,
+    val toDate: String,
+    val reason: String? = null,
+    val status: LeaveStatus,
+    val reviewedBy: String? = null,
+    val createdAt: String,
+)
+
+data class LeaveRequestCreateRequest(
+    val type: LeaveType,
+    val fromDate: String,
+    val toDate: String,
+    val reason: String? = null,
+)
+
+data class LeaveRequestReviewRequest(
+    val status: LeaveStatus,
 )
 
 // --- Fees ---
@@ -117,6 +168,72 @@ data class Fee(
     val status: FeeStatus,
     val dueDate: String,
 )
+
+// --- Payments ---
+data class PaymentInitiateRequest(val feeId: String)
+
+data class PaymentInitiateResponse(
+    val gatewayOrderId: String,
+    val amountInSmallestUnit: Long,
+    val currency: String,
+    val gatewayKeyId: String,
+)
+
+// --- Messaging ---
+data class Conversation(
+    val id: String,
+    val parentId: String,
+    val parentName: String,
+    val teacherId: String,
+    val teacherName: String,
+    val createdAt: String,
+)
+
+data class ConversationCreateRequest(val otherUserId: String)
+
+data class ConversationContact(val id: String, val name: String, val email: String)
+
+data class Message(
+    val id: String,
+    val conversationId: String,
+    val senderId: String,
+    val body: String,
+    val sentAt: String,
+)
+
+data class MessageCreateRequest(val body: String)
+
+// --- Events ---
+enum class RsvpStatus { GOING, MAYBE, NOT_GOING }
+
+data class SchoolEvent(
+    val id: String,
+    val title: String,
+    val description: String? = null,
+    val eventDate: String,
+    val location: String? = null,
+    val createdBy: String,
+    val createdAt: String,
+    val myRsvpStatus: RsvpStatus? = null,
+)
+
+data class EventCreateRequest(
+    val title: String,
+    val description: String? = null,
+    val eventDate: String,
+    val location: String? = null,
+)
+
+data class EventRsvpDto(
+    val id: String,
+    val eventId: String,
+    val userId: String,
+    val userName: String,
+    val status: RsvpStatus,
+    val respondedAt: String,
+)
+
+data class EventRsvpRequest(val status: RsvpStatus)
 
 // --- Spring Data Page<T> (subset the app uses) ---
 data class PageResponse<T>(

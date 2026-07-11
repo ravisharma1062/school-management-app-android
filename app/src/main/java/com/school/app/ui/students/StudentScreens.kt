@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -17,11 +18,13 @@ import androidx.compose.material.icons.filled.ChecklistRtl
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.WorkspacePremium
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -53,28 +56,56 @@ fun StudentsScreen(
 ) {
     val state = viewModel.state
     Scaffold(topBar = { AppTopBar("Students", onBack) }) { padding ->
-        Box(Modifier.padding(padding)) {
-            when {
-                state.loading -> CenteredLoading()
-                state.error != null && state.items.isEmpty() ->
-                    ErrorState(state.error, onRetry = viewModel::refresh)
-                state.items.isEmpty() -> EmptyState("No students yet")
-                else -> LazyColumn(
-                    contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    items(state.items, key = { it.id }) { student ->
-                        StudentCard(student, onClick = { onStudentClick(student) })
-                    }
-                    if (!state.endReached) {
-                        item {
-                            LaunchedEffect(state.items.size) { viewModel.loadNext() }
-                            Box(
-                                Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                contentAlignment = Alignment.Center,
-                            ) { CircularProgressIndicator() }
+        Column(Modifier.padding(padding)) {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                OutlinedTextField(
+                    value = viewModel.nameFilter,
+                    onValueChange = { viewModel.nameFilter = it },
+                    label = { Text("Name") },
+                    singleLine = true,
+                    modifier = Modifier.weight(1f),
+                )
+                OutlinedTextField(
+                    value = viewModel.classFilter,
+                    onValueChange = { viewModel.classFilter = it },
+                    label = { Text("Class") },
+                    singleLine = true,
+                    modifier = Modifier.width(90.dp),
+                )
+                Button(
+                    onClick = viewModel::refresh,
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                ) { Text("Search") }
+            }
+
+            Box(Modifier.weight(1f)) {
+                when {
+                    state.loading -> CenteredLoading()
+                    state.error != null && state.items.isEmpty() ->
+                        ErrorState(state.error, onRetry = viewModel::refresh)
+                    state.items.isEmpty() -> EmptyState("No students found")
+                    else -> LazyColumn(
+                        contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        items(state.items, key = { it.id }) { student ->
+                            StudentCard(student, onClick = { onStudentClick(student) })
+                        }
+                        if (!state.endReached) {
+                            item {
+                                LaunchedEffect(state.items.size) { viewModel.loadNext() }
+                                Box(
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                    contentAlignment = Alignment.Center,
+                                ) { CircularProgressIndicator() }
+                            }
                         }
                     }
                 }

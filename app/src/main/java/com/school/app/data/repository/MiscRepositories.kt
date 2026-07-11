@@ -1,5 +1,6 @@
 package com.school.app.data.repository
 
+import android.content.Context
 import com.school.app.data.Outcome
 import com.school.app.data.remote.ApiService
 import com.school.app.data.safeApiCall
@@ -7,15 +8,33 @@ import com.school.app.domain.model.ExamResult
 import com.school.app.domain.model.Fee
 import com.school.app.domain.model.Notice
 import com.school.app.domain.model.PageResponse
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class ExamResultRepository @Inject constructor(
     private val api: ApiService,
+    @ApplicationContext private val context: Context,
 ) {
     suspend fun forStudent(studentId: String): Outcome<List<ExamResult>> =
         safeApiCall { api.examResults(studentId) }
+
+    /** Downloads the report card PDF into the app's cache dir, ready to share via FileProvider. */
+    suspend fun downloadReportCard(studentId: String): Outcome<File> = safeApiCall {
+        val body = api.reportCard(studentId)
+        withContext(Dispatchers.IO) {
+            val dir = File(context.cacheDir, "downloads").apply { mkdirs() }
+            val file = File(dir, "report-card-$studentId.pdf")
+            body.byteStream().use { input ->
+                file.outputStream().use { output -> input.copyTo(output) }
+            }
+            file
+        }
+    }
 }
 
 @Singleton

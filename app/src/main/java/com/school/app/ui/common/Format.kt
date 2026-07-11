@@ -3,6 +3,7 @@ package com.school.app.ui.common
 import androidx.compose.ui.graphics.Color
 import com.school.app.domain.model.AttendanceStatus
 import com.school.app.domain.model.FeeStatus
+import com.school.app.domain.model.LeaveStatus
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
@@ -41,4 +42,10 @@ fun FeeStatus.color(): Color = when (this) {
     FeeStatus.PARTIAL -> Color(0xFFB45309)
     FeeStatus.PENDING -> Color(0xFF6B7280)
     FeeStatus.OVERDUE -> Color(0xFFB91C1C)
+}
+
+fun LeaveStatus.color(): Color = when (this) {
+    LeaveStatus.APPROVED -> Color(0xFF15803D)
+    LeaveStatus.REJECTED -> Color(0xFFB91C1C)
+    LeaveStatus.PENDING -> Color(0xFFB45309)
 }
