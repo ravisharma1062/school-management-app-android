@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.school.app.domain.model.AuthResponse
+import com.school.app.domain.model.LanguageCode
 import com.school.app.domain.model.Role
 import com.school.app.domain.model.User
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -21,6 +22,7 @@ data class Session(
     val userId: String?,
     val userName: String?,
     val userEmail: String?,
+    val preferredLanguage: LanguageCode = LanguageCode.EN,
 )
 
 private val Context.sessionDataStore by preferencesDataStore(name = "session")
@@ -40,6 +42,7 @@ class TokenManager @Inject constructor(
         val ID = stringPreferencesKey("user_id")
         val NAME = stringPreferencesKey("user_name")
         val EMAIL = stringPreferencesKey("user_email")
+        val LANGUAGE = stringPreferencesKey("preferred_language")
     }
 
     @Volatile
@@ -55,7 +58,9 @@ class TokenManager @Inject constructor(
         val refresh = prefs[Keys.REFRESH] ?: return@map null
         val role = prefs[Keys.ROLE]?.let { runCatching { Role.valueOf(it) }.getOrNull() }
             ?: return@map null
-        Session(access, refresh, role, prefs[Keys.ID], prefs[Keys.NAME], prefs[Keys.EMAIL])
+        val language = prefs[Keys.LANGUAGE]?.let { runCatching { LanguageCode.valueOf(it) }.getOrNull() }
+            ?: LanguageCode.EN
+        Session(access, refresh, role, prefs[Keys.ID], prefs[Keys.NAME], prefs[Keys.EMAIL], language)
     }
 
     /** Loads persisted tokens into memory; called once at app start. */
@@ -80,6 +85,13 @@ class TokenManager @Inject constructor(
             prefs[Keys.ID] = user.id
             prefs[Keys.NAME] = user.name
             prefs[Keys.EMAIL] = user.email
+            prefs[Keys.LANGUAGE] = user.preferredLanguage.name
+        }
+    }
+
+    suspend fun saveLanguage(language: LanguageCode) {
+        context.sessionDataStore.edit { prefs ->
+            prefs[Keys.LANGUAGE] = language.name
         }
     }
 

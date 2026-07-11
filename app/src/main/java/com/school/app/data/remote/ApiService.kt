@@ -23,6 +23,7 @@ import com.school.app.domain.model.LeaveRequest
 import com.school.app.domain.model.LeaveRequestCreateRequest
 import com.school.app.domain.model.LeaveRequestReviewRequest
 import com.school.app.domain.model.LoginRequest
+import com.school.app.domain.model.UserLanguageUpdateRequest
 import com.school.app.domain.model.Notice
 import com.school.app.domain.model.PageResponse
 import com.school.app.domain.model.PaymentInitiateRequest
@@ -55,6 +56,9 @@ interface ApiService {
 
     @GET("auth/me")
     suspend fun me(): User
+
+    @PATCH("users/me/language")
+    suspend fun updateLanguage(@Body body: UserLanguageUpdateRequest): User
 
     // --- Students ---
     @GET("students")

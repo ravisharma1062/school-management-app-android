@@ -3,10 +3,13 @@ package com.school.app.data.repository
 import com.school.app.data.Outcome
 import com.school.app.data.auth.Session
 import com.school.app.data.auth.TokenManager
+import com.school.app.data.map
 import com.school.app.data.remote.ApiService
 import com.school.app.data.safeApiCall
+import com.school.app.domain.model.LanguageCode
 import com.school.app.domain.model.LoginRequest
 import com.school.app.domain.model.Role
+import com.school.app.domain.model.UserLanguageUpdateRequest
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -36,5 +39,13 @@ class AuthRepository @Inject constructor(
 
     suspend fun logout() {
         tokenManager.clear()
+    }
+
+    suspend fun updateLanguage(language: LanguageCode): Outcome<LanguageCode> {
+        val result = safeApiCall { api.updateLanguage(UserLanguageUpdateRequest(language)) }
+        if (result is Outcome.Success) {
+            tokenManager.saveLanguage(result.data.preferredLanguage)
+        }
+        return result.map { it.preferredLanguage }
     }
 }

@@ -5,6 +5,8 @@ package com.school.app.domain.model
 
 enum class Role { ADMIN, TEACHER, PARENT }
 
+enum class LanguageCode { EN, HI }
+
 enum class TargetRole { ADMIN, TEACHER, PARENT, ALL }
 
 enum class AttendanceStatus { PRESENT, ABSENT, LATE, EXCUSED }
@@ -28,7 +30,10 @@ data class User(
     val email: String,
     val role: Role,
     val phone: String? = null,
+    val preferredLanguage: LanguageCode = LanguageCode.EN,
 )
+
+data class UserLanguageUpdateRequest(val preferredLanguage: LanguageCode)
 
 // --- Students ---
 data class Student(
