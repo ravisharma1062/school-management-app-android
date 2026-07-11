@@ -268,6 +268,16 @@ data class StudentTransport(
 // --- Library ---
 enum class BookIssueStatus { ISSUED, RETURNED }
 
+data class Book(
+    val id: String,
+    val title: String,
+    val author: String,
+    val isbn: String? = null,
+    val hasCoverImage: Boolean = false,
+    val totalCopies: Int,
+    val availableCopies: Int,
+)
+
 data class BookIssue(
     val id: String,
     val bookId: String,

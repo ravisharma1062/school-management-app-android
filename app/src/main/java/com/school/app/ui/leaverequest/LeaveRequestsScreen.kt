@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.school.app.R
 import com.school.app.domain.model.LeaveRequest
 import com.school.app.domain.model.LeaveStatus
 import com.school.app.domain.model.LeaveType
@@ -36,6 +37,7 @@ import com.school.app.ui.common.ErrorState
 import com.school.app.ui.common.StatusChip
 import com.school.app.ui.common.color
 import com.school.app.ui.common.formatDate
+import com.school.app.ui.common.stringRes
 import com.school.app.viewmodel.LeaveRequestsViewModel
 import com.school.app.viewmodel.canReviewLeaveRequests
 
@@ -48,7 +50,7 @@ fun LeaveRequestsScreen(
     val isAdmin = canReviewLeaveRequests(role)
     val state = viewModel.state
 
-    Scaffold(topBar = { AppTopBar("Leave Requests", onBack) }) { padding ->
+    Scaffold(topBar = { AppTopBar(stringRes(R.string.leave_requests_title), onBack) }) { padding ->
         Column(
             Modifier
                 .fillMaxWidth()
@@ -71,7 +73,7 @@ fun LeaveRequestsScreen(
                 state.error != null && state.items.isEmpty() ->
                     ErrorState(state.error, onRetry = viewModel::refresh)
                 state.items.isEmpty() -> EmptyState(
-                    if (isAdmin) "No leave requests to review" else "You haven't submitted any leave requests yet",
+                    stringRes(if (isAdmin) R.string.leave_none_admin else R.string.leave_none_user),
                 )
                 else -> LazyColumn(
                     contentPadding = PaddingValues(16.dp),
@@ -111,7 +113,7 @@ private fun StatusFilterRow(selected: LeaveStatus?, onSelect: (LeaveStatus?) -> 
             .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        FilterChip(selected = selected == null, onClick = { onSelect(null) }, label = { Text("All") })
+        FilterChip(selected = selected == null, onClick = { onSelect(null) }, label = { Text(stringRes(R.string.leave_status_all)) })
         LeaveStatus.entries.forEach { status ->
             FilterChip(
                 selected = selected == status,
@@ -131,7 +133,7 @@ private fun SubmitLeaveForm(viewModel: LeaveRequestsViewModel) {
     ) {
         Column(Modifier.padding(16.dp)) {
             Text(
-                "Submit a leave request",
+                stringRes(R.string.leave_submit_title),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
             )
@@ -156,13 +158,13 @@ private fun SubmitLeaveForm(viewModel: LeaveRequestsViewModel) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 DatePickerField(
-                    label = "From",
+                    label = stringRes(R.string.leave_from),
                     date = viewModel.fromDate,
                     onDateChange = { viewModel.fromDate = it },
                     modifier = Modifier.weight(1f),
                 )
                 DatePickerField(
-                    label = "To",
+                    label = stringRes(R.string.leave_to),
                     date = viewModel.toDate,
                     onDateChange = { viewModel.toDate = it },
                     modifier = Modifier.weight(1f),
@@ -171,7 +173,7 @@ private fun SubmitLeaveForm(viewModel: LeaveRequestsViewModel) {
             OutlinedTextField(
                 value = viewModel.reason,
                 onValueChange = { viewModel.reason = it },
-                label = { Text("Reason (optional)") },
+                label = { Text(stringRes(R.string.leave_reason_optional)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp),
@@ -187,7 +189,7 @@ private fun SubmitLeaveForm(viewModel: LeaveRequestsViewModel) {
             }
             if (viewModel.submitSuccess) {
                 Text(
-                    "Leave request submitted.",
+                    stringRes(R.string.leave_submitted),
                     color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(top = 8.dp),
@@ -199,7 +201,7 @@ private fun SubmitLeaveForm(viewModel: LeaveRequestsViewModel) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 12.dp),
-            ) { Text(if (viewModel.submitting) "Submitting…" else "Submit request") }
+            ) { Text(stringRes(if (viewModel.submitting) R.string.leave_submitting else R.string.leave_submit_request)) }
         }
     }
 }
@@ -243,8 +245,8 @@ private fun LeaveRequestCard(
                         .padding(top = 12.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    Button(onClick = onApprove, enabled = !reviewing) { Text("Approve") }
-                    Button(onClick = onReject, enabled = !reviewing) { Text("Reject") }
+                    Button(onClick = onApprove, enabled = !reviewing) { Text(stringRes(R.string.leave_approve)) }
+                    Button(onClick = onReject, enabled = !reviewing) { Text(stringRes(R.string.leave_reject)) }
                 }
             }
         }

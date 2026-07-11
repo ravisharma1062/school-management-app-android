@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.razorpay.Checkout
+import com.school.app.R
 import com.school.app.domain.model.Fee
 import com.school.app.domain.model.PaymentInitiateResponse
 import com.school.app.domain.model.Role
@@ -40,6 +41,7 @@ import com.school.app.ui.common.StatusChip
 import com.school.app.ui.common.color
 import com.school.app.ui.common.formatDate
 import com.school.app.ui.common.formatMoney
+import com.school.app.ui.common.stringRes
 import com.school.app.viewmodel.FeesViewModel
 import com.school.app.viewmodel.PaymentUiState
 import com.school.app.viewmodel.UiState
@@ -52,13 +54,14 @@ fun FeesScreen(
     viewModel: FeesViewModel = hiltViewModel(),
 ) {
     val title = if (viewModel.studentName.isNotBlank()) {
-        "Fees · ${viewModel.studentName}"
+        stringRes(R.string.fees_title_named, viewModel.studentName)
     } else {
-        "Fees"
+        stringRes(R.string.fees_title)
     }
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     val paymentState = viewModel.paymentState
+    val paymentSubmittedMessage = stringRes(R.string.fees_payment_submitted)
 
     LaunchedEffect(paymentState) {
         when (paymentState) {
@@ -70,7 +73,7 @@ fun FeesScreen(
                 viewModel.onCheckoutOpened()
             }
             is PaymentUiState.Success -> {
-                snackbarHostState.showSnackbar("Payment submitted. It may take a few minutes to reflect here.")
+                snackbarHostState.showSnackbar(paymentSubmittedMessage)
                 viewModel.dismissPaymentMessage()
             }
             is PaymentUiState.Error -> {
@@ -91,7 +94,7 @@ fun FeesScreen(
                 is UiState.Error -> ErrorState(state.message, onRetry = viewModel::load)
                 is UiState.Ready -> {
                     if (state.data.isEmpty()) {
-                        EmptyState("No fee records yet")
+                        EmptyState(stringRes(R.string.fees_none))
                     } else {
                         FeesList(
                             fees = state.data,
@@ -134,10 +137,10 @@ private fun FeesList(
         item {
             Card(Modifier.fillMaxWidth()) {
                 Row(Modifier.padding(16.dp)) {
-                    SummaryColumn("Total due", formatMoney(totalDue), Modifier.weight(1f))
-                    SummaryColumn("Paid", formatMoney(totalPaid), Modifier.weight(1f))
+                    SummaryColumn(stringRes(R.string.fees_total_due), formatMoney(totalDue), Modifier.weight(1f))
+                    SummaryColumn(stringRes(R.string.fees_paid), formatMoney(totalPaid), Modifier.weight(1f))
                     SummaryColumn(
-                        "Outstanding",
+                        stringRes(R.string.fees_outstanding),
                         formatMoney((totalDue - totalPaid).coerceAtLeast(0.0)),
                         Modifier.weight(1f),
                     )
@@ -158,12 +161,12 @@ private fun FeesList(
                         StatusChip(fee.status.name, fee.status.color())
                     }
                     Text(
-                        "${formatMoney(fee.amountPaid)} paid of ${formatMoney(fee.amountDue)}",
+                        stringRes(R.string.fees_paid_of, formatMoney(fee.amountPaid), formatMoney(fee.amountDue)),
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(top = 4.dp),
                     )
                     Text(
-                        "Due by ${formatDate(fee.dueDate)}",
+                        stringRes(R.string.fees_due_by, formatDate(fee.dueDate)),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = 4.dp),
@@ -185,7 +188,7 @@ private fun FeesList(
                                 )
                             }
                             TextButton(onClick = { onPay(fee.id) }, enabled = payingFeeId == null) {
-                                Text(if (payingFeeId == fee.id) "Opening…" else "Pay Now")
+                                Text(stringRes(if (payingFeeId == fee.id) R.string.fees_opening else R.string.fees_pay_now))
                             }
                         }
                     }

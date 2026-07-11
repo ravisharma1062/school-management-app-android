@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">स्कूल ऐप</string>
+
+    <!-- Common -->
+    <string name="common_retry">पुनः प्रयास करें</string>
+    <string name="common_cancel">रद्द करें</string>
+    <string name="common_save">सहेजें</string>
+    <string name="common_ok">ठीक है</string>
+    <string name="common_back">वापस</string>
+    <string name="common_view">देखें</string>
+    <string name="common_view_file">फ़ाइल देखें</string>
+    <string name="common_offline_banner">ऑफ़लाइन — सहेजा हुआ डेटा दिखाया जा रहा है</string>
+    <string name="common_pick_date">तारीख चुनें</string>
+
+    <!-- Login -->
+    <string name="login_app_title">स्कूल ऐप</string>
+    <string name="login_subtitle">अपने स्कूल खाते से साइन इन करें</string>
+    <string name="login_email">ईमेल</string>
+    <string name="login_password">पासवर्ड</string>
+    <string name="login_show_password">पासवर्ड दिखाएं</string>
+    <string name="login_hide_password">पासवर्ड छिपाएं</string>
+    <string name="login_sign_in">साइन इन करें</string>
+
+    <!-- Home -->
+    <string name="home_app_title">स्कूल ऐप</string>
+    <string name="home_hello">नमस्ते, %1$s</string>
+    <string name="home_log_out">लॉग आउट</string>
+    <string name="home_sync_now">अभी सिंक करें</string>
+    <string name="home_pending_sync">%1$d उपस्थिति प्रविष्टि सिंक होने की प्रतीक्षा में</string>
+    <string name="role_admin">प्रशासक</string>
+    <string name="role_teacher">शिक्षक</string>
+    <string name="role_parent">अभिभावक</string>
+    <string name="feature_mark_attendance">उपस्थिति दर्ज करें</string>
+    <string name="feature_students">छात्र</string>
+    <string name="feature_my_children">मेरे बच्चे</string>
+    <string name="feature_timetable">समय सारणी</string>
+    <string name="feature_homework">गृहकार्य</string>
+    <string name="feature_notices">सूचनाएं</string>
+    <string name="feature_leave_requests">अवकाश अनुरोध</string>
+    <string name="feature_events">कार्यक्रम</string>
+    <string name="feature_messages">संदेश</string>
+
+    <!-- Students -->
+    <string name="students_title">छात्र</string>
+    <string name="students_name">नाम</string>
+    <string name="students_class">कक्षा</string>
+    <string name="students_search">खोजें</string>
+    <string name="students_none_found">कोई छात्र नहीं मिला</string>
+    <string name="children_title">मेरे बच्चे</string>
+    <string name="children_none">आपके खाते से अभी तक कोई बच्चा जुड़ा नहीं है।\nकृपया स्कूल कार्यालय से संपर्क करें।</string>
+    <string name="student_detail_title">छात्र</string>
+    <string name="student_class_roll">कक्षा %1$s-%2$s · रोल %3$s</string>
+    <string name="student_dob">जन्म तिथि: %1$s</string>
+    <string name="action_attendance_history">उपस्थिति इतिहास</string>
+    <string name="action_exam_results">परीक्षा परिणाम</string>
+    <string name="action_class_timetable">कक्षा समय सारणी</string>
+    <string name="action_homework">गृहकार्य</string>
+    <string name="action_fees">शुल्क</string>
+    <string name="action_bus_tracking">बस ट्रैकिंग</string>
+    <string name="action_library">पुस्तकालय</string>
+
+    <!-- Attendance -->
+    <string name="attendance_mark_title">उपस्थिति दर्ज करें</string>
+    <string name="attendance_saving">सहेजा जा रहा है…</string>
+    <string name="attendance_save">उपस्थिति सहेजें</string>
+    <string name="attendance_queued_offline">%1$d ऑफ़लाइन कतार में</string>
+    <string name="attendance_sync">सिंक करें</string>
+    <string name="attendance_class">कक्षा</string>
+    <string name="attendance_section">सेक्शन</string>
+    <string name="attendance_date">तारीख</string>
+    <string name="attendance_load_students">छात्र लोड करें</string>
+    <string name="attendance_already_marked">इस तारीख के लिए उपस्थिति पहले से मौजूद है — सहेजे गए चिह्न पहले से चुने गए हैं।</string>
+    <string name="attendance_history_title">उपस्थिति</string>
+    <string name="attendance_history_title_named">उपस्थिति · %1$s</string>
+    <string name="attendance_none">अभी तक कोई उपस्थिति रिकॉर्ड नहीं है</string>
+    <string name="attendance_percent">%1$d%% उपस्थिति</string>
+
+    <!-- Timetable -->
+    <string name="timetable_title">समय सारणी</string>
+    <string name="timetable_class">कक्षा</string>
+    <string name="timetable_section">सेक्शन</string>
+    <string name="timetable_view">देखें</string>
+    <string name="timetable_enter_class_section">समय सारणी देखने के लिए कक्षा और सेक्शन दर्ज करें</string>
+    <string name="timetable_none_published">इस कक्षा के लिए अभी तक कोई समय सारणी प्रकाशित नहीं हुई है</string>
+    <string name="day_monday">सोमवार</string>
+    <string name="day_tuesday">मंगलवार</string>
+    <string name="day_wednesday">बुधवार</string>
+    <string name="day_thursday">गुरुवार</string>
+    <string name="day_friday">शुक्रवार</string>
+    <string name="day_saturday">शनिवार</string>
+    <string name="day_sunday">रविवार</string>
+    <string name="timetable_period">P%1$d</string>
+
+    <!-- Notices -->
+    <string name="notices_title">सूचनाएं</string>
+    <string name="notices_none">अभी तक कोई सूचना नहीं है</string>
+
+    <!-- Exam results -->
+    <string name="exam_results_title">परीक्षा परिणाम</string>
+    <string name="exam_results_title_named">परिणाम · %1$s</string>
+    <string name="exam_results_download">रिपोर्ट कार्ड डाउनलोड करें</string>
+    <string name="exam_results_downloading">डाउनलोड हो रहा है…</string>
+    <string name="exam_results_share_intent">रिपोर्ट कार्ड साझा करें</string>
+    <string name="exam_results_none">अभी तक कोई परीक्षा परिणाम प्रकाशित नहीं हुआ है</string>
+
+    <!-- Leave requests -->
+    <string name="leave_requests_title">अवकाश अनुरोध</string>
+    <string name="leave_status_all">सभी</string>
+    <string name="leave_none_admin">समीक्षा के लिए कोई अवकाश अनुरोध नहीं है</string>
+    <string name="leave_none_user">आपने अभी तक कोई अवकाश अनुरोध सबमिट नहीं किया है</string>
+    <string name="leave_submit_title">अवकाश अनुरोध सबमिट करें</string>
+    <string name="leave_from">से</string>
+    <string name="leave_to">तक</string>
+    <string name="leave_reason_optional">कारण (वैकल्पिक)</string>
+    <string name="leave_submitting">सबमिट हो रहा है…</string>
+    <string name="leave_submit_request">अनुरोध सबमिट करें</string>
+    <string name="leave_submitted">अवकाश अनुरोध सबमिट किया गया।</string>
+    <string name="leave_approve">स्वीकृत करें</string>
+    <string name="leave_reject">अस्वीकार करें</string>
+
+    <!-- Fees -->
+    <string name="fees_title">शुल्क</string>
+    <string name="fees_title_named">शुल्क · %1$s</string>
+    <string name="fees_none">अभी तक कोई शुल्क रिकॉर्ड नहीं है</string>
+    <string name="fees_total_due">कुल देय</string>
+    <string name="fees_paid">भुगतान किया गया</string>
+    <string name="fees_outstanding">बकाया</string>
+    <string name="fees_paid_of">%2$s में से %1$s भुगतान किया गया</string>
+    <string name="fees_due_by">देय तिथि %1$s</string>
+    <string name="fees_opening">खोला जा रहा है…</string>
+    <string name="fees_pay_now">अभी भुगतान करें</string>
+    <string name="fees_payment_submitted">भुगतान सबमिट किया गया। इसे यहां दिखने में कुछ मिनट लग सकते हैं।</string>
+
+    <!-- Homework -->
+    <string name="homework_title">गृहकार्य</string>
+    <string name="homework_class">कक्षा</string>
+    <string name="homework_section">सेक्शन</string>
+    <string name="homework_view">देखें</string>
+    <string name="homework_post_fab">गृहकार्य पोस्ट करें</string>
+    <string name="homework_enter_class_section">गृहकार्य देखने के लिए कक्षा और सेक्शन दर्ज करें</string>
+    <string name="homework_none">अभी तक कोई गृहकार्य पोस्ट नहीं किया गया है</string>
+    <string name="homework_due">देय %1$s</string>
+    <string name="homework_view_file">फ़ाइल देखें</string>
+    <string name="homework_uploading">अपलोड हो रहा है…</string>
+    <string name="homework_submit">सबमिट करें</string>
+    <string name="homework_grade_prefix">ग्रेड: %1$s</string>
+    <string name="homework_hide_submissions">सबमिशन छिपाएं</string>
+    <string name="homework_view_submissions">सबमिशन देखें</string>
+    <string name="homework_none_submissions">अभी तक कोई सबमिशन नहीं है</string>
+    <string name="homework_edit_grade">ग्रेड संपादित करें</string>
+    <string name="homework_grade">ग्रेड</string>
+    <string name="homework_save">सहेजें</string>
+    <string name="homework_feedback_optional">प्रतिक्रिया (वैकल्पिक)</string>
+    <string name="homework_open_intent">सबमिशन खोलें</string>
+    <string name="homework_create_title">गृहकार्य पोस्ट करें</string>
+    <string name="homework_subject">विषय</string>
+    <string name="homework_title_field">शीर्षक</string>
+    <string name="homework_description_optional">विवरण (वैकल्पिक)</string>
+    <string name="homework_due_date">देय तिथि</string>
+    <string name="homework_posting">पोस्ट हो रहा है…</string>
+    <string name="homework_post_button">गृहकार्य पोस्ट करें</string>
+
+    <!-- Messaging -->
+    <string name="messages_title">संदेश</string>
+    <string name="messages_none_parent">जब आपके बच्चों के शिक्षक नियुक्त होंगे तो वे यहां दिखाई देंगे।</string>
+    <string name="messages_none_teacher">जब आपको किसी कक्षा में नियुक्त किया जाएगा तो आपके छात्रों के अभिभावक यहां दिखाई देंगे।</string>
+    <string name="messages_start_new">नई बातचीत शुरू करें</string>
+    <string name="messages_type_hint">संदेश लिखें…</string>
+    <string name="messages_send">भेजें</string>
+    <string name="messages_none_yet">अभी तक कोई संदेश नहीं है। नमस्ते कहें!</string>
+
+    <!-- Events -->
+    <string name="events_title">कार्यक्रम</string>
+    <string name="events_none">कोई आगामी कार्यक्रम नहीं</string>
+    <string name="events_add_fab">कार्यक्रम जोड़ें</string>
+    <string name="events_going">शामिल होंगे</string>
+    <string name="events_maybe">शायद</string>
+    <string name="events_cant_go">नहीं जा सकते</string>
+    <string name="events_hide_rsvps">RSVP छिपाएं</string>
+    <string name="events_view_rsvps">RSVP देखें</string>
+    <string name="events_none_responses">अभी तक कोई प्रतिक्रिया नहीं</string>
+    <string name="events_create_title">कार्यक्रम जोड़ें</string>
+    <string name="events_title_field">शीर्षक</string>
+    <string name="events_date">तारीख</string>
+    <string name="events_location_optional">स्थान (वैकल्पिक)</string>
+    <string name="events_description_optional">विवरण (वैकल्पिक)</string>
+    <string name="events_creating">बनाया जा रहा है…</string>
+    <string name="events_create_button">कार्यक्रम बनाएं</string>
+    <string name="events_date_location">तारीख %1$s</string>
+
+    <!-- Transport -->
+    <string name="transport_title">बस ट्रैकिंग</string>
+    <string name="transport_title_named">बस · %1$s</string>
+    <string name="transport_not_assigned">इस छात्र को अभी तक किसी बस रूट में नहीं जोड़ा गया है।</string>
+    <string name="transport_route_stop">रूट %1$s · स्टॉप %2$s</string>
+    <string name="transport_no_location">अभी तक कोई स्थान नहीं मिला — बस की जीपीएस डिवाइस से अपडेट नहीं आया है।</string>
+    <string name="transport_last_updated">अंतिम अपडेट %1$s</string>
+    <string name="transport_just_now">अभी अभी</string>
+    <string name="transport_marker_stop">स्टॉप</string>
+    <string name="transport_marker_bus">बस</string>
+
+    <!-- Library -->
+    <string name="library_title">पुस्तकालय</string>
+    <string name="library_title_named">पुस्तकालय · %1$s</string>
+    <string name="library_none">अभी तक कोई पुस्तक जारी नहीं हुई है</string>
+    <string name="library_issued_due">जारी %1$s · देय %2$s</string>
+    <string name="library_returned">वापस की गई %1$s</string>
+    <string name="library_fine">जुर्माना: %1$s</string>
+    <string name="library_catalog_title">पुस्तक सूची</string>
+    <string name="library_search_hint">शीर्षक, लेखक या ISBN खोजें</string>
+    <string name="library_search_none">कोई पुस्तक नहीं मिली</string>
+    <string name="library_search_prompt">ऊपर सूची में खोजें</string>
+    <string name="library_available">%1$d / %2$d उपलब्ध</string>
+</resources>

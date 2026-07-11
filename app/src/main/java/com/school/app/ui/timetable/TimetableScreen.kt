@@ -21,12 +21,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.school.app.R
 import com.school.app.domain.model.TimetableEntry
 import com.school.app.ui.common.AppTopBar
 import com.school.app.ui.common.CacheBanner
 import com.school.app.ui.common.CenteredLoading
 import com.school.app.ui.common.EmptyState
 import com.school.app.ui.common.ErrorState
+import com.school.app.ui.common.stringRes
 import com.school.app.viewmodel.TimetableViewModel
 import com.school.app.viewmodel.UiState
 
@@ -34,12 +36,22 @@ private val dayOrder = listOf(
     "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY",
 )
 
+private val dayLabelRes = mapOf(
+    "MONDAY" to R.string.day_monday,
+    "TUESDAY" to R.string.day_tuesday,
+    "WEDNESDAY" to R.string.day_wednesday,
+    "THURSDAY" to R.string.day_thursday,
+    "FRIDAY" to R.string.day_friday,
+    "SATURDAY" to R.string.day_saturday,
+    "SUNDAY" to R.string.day_sunday,
+)
+
 @Composable
 fun TimetableScreen(
     onBack: () -> Unit,
     viewModel: TimetableViewModel = hiltViewModel(),
 ) {
-    Scaffold(topBar = { AppTopBar("Timetable", onBack) }) { padding ->
+    Scaffold(topBar = { AppTopBar(stringRes(R.string.timetable_title), onBack) }) { padding ->
         Column(
             Modifier
                 .fillMaxSize()
@@ -54,31 +66,31 @@ fun TimetableScreen(
                 OutlinedTextField(
                     value = viewModel.studentClass,
                     onValueChange = { viewModel.studentClass = it },
-                    label = { Text("Class") },
+                    label = { Text(stringRes(R.string.timetable_class)) },
                     singleLine = true,
                     modifier = Modifier.weight(1f),
                 )
                 OutlinedTextField(
                     value = viewModel.section,
                     onValueChange = { viewModel.section = it },
-                    label = { Text("Section") },
+                    label = { Text(stringRes(R.string.timetable_section)) },
                     singleLine = true,
                     modifier = Modifier.weight(1f),
                 )
                 Button(
                     onClick = viewModel::load,
                     modifier = Modifier.align(androidx.compose.ui.Alignment.CenterVertically),
-                ) { Text("View") }
+                ) { Text(stringRes(R.string.timetable_view)) }
             }
 
             when (val state = viewModel.state) {
-                null -> EmptyState("Enter a class and section to view the timetable")
+                null -> EmptyState(stringRes(R.string.timetable_enter_class_section))
                 UiState.Loading -> CenteredLoading()
                 is UiState.Error -> ErrorState(state.message, onRetry = viewModel::load)
                 is UiState.Ready -> {
                     CacheBanner(state.fromCache)
                     if (state.data.isEmpty()) {
-                        EmptyState("No timetable published for this class yet")
+                        EmptyState(stringRes(R.string.timetable_none_published))
                     } else {
                         TimetableList(state.data)
                     }
@@ -100,7 +112,7 @@ private fun TimetableList(entries: List<TimetableEntry>) {
                 Card(Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(16.dp)) {
                         Text(
-                            day.lowercase().replaceFirstChar { it.uppercase() },
+                            stringRes(dayLabelRes.getValue(day)),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.primary,
@@ -108,7 +120,7 @@ private fun TimetableList(entries: List<TimetableEntry>) {
                         byDay.getValue(day).sortedBy { it.period }.forEach { entry ->
                             Row(Modifier.padding(top = 8.dp)) {
                                 Text(
-                                    "P${entry.period}",
+                                    stringRes(R.string.timetable_period, entry.period),
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.SemiBold,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,

@@ -3,6 +3,7 @@ package com.school.app.data.remote
 import com.school.app.domain.model.Attendance
 import com.school.app.domain.model.AttendanceMarkRequest
 import com.school.app.domain.model.AuthResponse
+import com.school.app.domain.model.Book
 import com.school.app.domain.model.BookIssue
 import com.school.app.domain.model.BusLocation
 import com.school.app.domain.model.Conversation
@@ -212,6 +213,13 @@ interface ApiService {
     // --- Library ---
     @GET("library/students/{studentId}/issues")
     suspend fun libraryIssuesForStudent(@Path("studentId") studentId: String): List<BookIssue>
+
+    @GET("library/books")
+    suspend fun libraryBooks(
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("search") search: String? = null,
+    ): PageResponse<Book>
 }
 
 /**

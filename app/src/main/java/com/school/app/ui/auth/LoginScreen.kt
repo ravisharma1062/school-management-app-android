@@ -34,6 +34,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.school.app.R
+import com.school.app.ui.common.stringRes
 import com.school.app.viewmodel.LoginViewModel
 
 @Composable
@@ -55,12 +57,12 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel()) {
             modifier = Modifier.size(72.dp),
         )
         Text(
-            "School App",
+            stringRes(R.string.login_app_title),
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(top = 8.dp),
         )
         Text(
-            "Sign in with your school account",
+            stringRes(R.string.login_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 4.dp, bottom = 32.dp),
@@ -69,7 +71,7 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel()) {
         OutlinedTextField(
             value = viewModel.email,
             onValueChange = { viewModel.email = it },
-            label = { Text("Email") },
+            label = { Text(stringRes(R.string.login_email)) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             modifier = Modifier.fillMaxWidth(),
@@ -78,7 +80,7 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel()) {
         OutlinedTextField(
             value = viewModel.password,
             onValueChange = { viewModel.password = it },
-            label = { Text("Password") },
+            label = { Text(stringRes(R.string.login_password)) },
             singleLine = true,
             visualTransformation = if (showPassword) {
                 VisualTransformation.None
@@ -90,7 +92,7 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel()) {
                 IconButton(onClick = { showPassword = !showPassword }) {
                     Icon(
                         if (showPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                        contentDescription = if (showPassword) "Hide password" else "Show password",
+                        contentDescription = stringRes(if (showPassword) R.string.login_hide_password else R.string.login_show_password),
                     )
                 }
             },
@@ -120,7 +122,7 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel()) {
                     color = MaterialTheme.colorScheme.onPrimary,
                 )
             } else {
-                Text("Sign in")
+                Text(stringRes(R.string.login_sign_in))
             }
         }
     }

@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import com.school.app.R
 import com.school.app.domain.model.Conversation
 import com.school.app.domain.model.ConversationContact
 import com.school.app.domain.model.Message
@@ -39,6 +40,7 @@ import com.school.app.ui.common.AppTopBar
 import com.school.app.ui.common.CenteredLoading
 import com.school.app.ui.common.EmptyState
 import com.school.app.ui.common.ErrorState
+import com.school.app.ui.common.stringRes
 import com.school.app.viewmodel.ConversationThreadViewModel
 import com.school.app.viewmodel.MessagesViewModel
 
@@ -65,18 +67,14 @@ fun MessagesListScreen(
         }
     }
 
-    Scaffold(topBar = { AppTopBar("Messages", onBack) }) { padding ->
+    Scaffold(topBar = { AppTopBar(stringRes(R.string.messages_title), onBack) }) { padding ->
         Box(Modifier.padding(padding)) {
             when {
                 state.loading && state.conversations.isEmpty() && state.contacts.isEmpty() -> CenteredLoading()
                 state.error != null && state.conversations.isEmpty() -> ErrorState(state.error, onRetry = viewModel::refresh)
                 state.conversations.isEmpty() && state.contacts.isEmpty() ->
                     EmptyState(
-                        if (role == Role.PARENT) {
-                            "You'll see your children's teachers here once they're assigned to a class."
-                        } else {
-                            "You'll see parents of your students here once you're assigned to a class."
-                        },
+                        stringRes(if (role == Role.PARENT) R.string.messages_none_parent else R.string.messages_none_teacher),
                     )
                 else -> LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(state.conversations, key = { "c-${it.id}" }) { c ->
@@ -87,7 +85,7 @@ fun MessagesListScreen(
                     if (newContacts.isNotEmpty()) {
                         item {
                             Text(
-                                "START A NEW CONVERSATION",
+                                stringRes(R.string.messages_start_new),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
@@ -163,7 +161,7 @@ fun ConversationThreadScreen(
                 when {
                     state.loading && state.messages.isEmpty() -> CenteredLoading()
                     state.error != null && state.messages.isEmpty() -> ErrorState(state.error, onRetry = viewModel::load)
-                    state.messages.isEmpty() -> EmptyState("No messages yet. Say hello!")
+                    state.messages.isEmpty() -> EmptyState(stringRes(R.string.messages_none_yet))
                     else -> LazyColumn(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -183,12 +181,12 @@ fun ConversationThreadScreen(
                 OutlinedTextField(
                     value = viewModel.draft,
                     onValueChange = { viewModel.draft = it },
-                    placeholder = { Text("Type a message…") },
+                    placeholder = { Text(stringRes(R.string.messages_type_hint)) },
                     singleLine = true,
                     modifier = Modifier.weight(1f),
                 )
                 IconButton(onClick = viewModel::send, enabled = !viewModel.sending && viewModel.draft.isNotBlank()) {
-                    Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send")
+                    Icon(Icons.AutoMirrored.Filled.Send, contentDescription = stringRes(R.string.messages_send))
                 }
             }
         }

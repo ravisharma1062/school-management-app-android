@@ -1,4 +1,215 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">School App</string>
+
+    <!-- Common -->
+    <string name="common_retry">Retry</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_save">Save</string>
+    <string name="common_ok">OK</string>
+    <string name="common_back">Back</string>
+    <string name="common_view">View</string>
+    <string name="common_view_file">View file</string>
+    <string name="common_offline_banner">Offline — showing saved data</string>
+    <string name="common_pick_date">Pick date</string>
+
+    <!-- Login -->
+    <string name="login_app_title">School App</string>
+    <string name="login_subtitle">Sign in with your school account</string>
+    <string name="login_email">Email</string>
+    <string name="login_password">Password</string>
+    <string name="login_show_password">Show password</string>
+    <string name="login_hide_password">Hide password</string>
+    <string name="login_sign_in">Sign in</string>
+
+    <!-- Home -->
+    <string name="home_app_title">School App</string>
+    <string name="home_hello">Hello, %1$s</string>
+    <string name="home_log_out">Log out</string>
+    <string name="home_sync_now">Sync now</string>
+    <string name="home_pending_sync">%1$d attendance mark(s) waiting to sync</string>
+    <string name="role_admin">Admin</string>
+    <string name="role_teacher">Teacher</string>
+    <string name="role_parent">Parent</string>
+    <string name="feature_mark_attendance">Mark Attendance</string>
+    <string name="feature_students">Students</string>
+    <string name="feature_my_children">My Children</string>
+    <string name="feature_timetable">Timetable</string>
+    <string name="feature_homework">Homework</string>
+    <string name="feature_notices">Notices</string>
+    <string name="feature_leave_requests">Leave Requests</string>
+    <string name="feature_events">Events</string>
+    <string name="feature_messages">Messages</string>
+
+    <!-- Students -->
+    <string name="students_title">Students</string>
+    <string name="students_name">Name</string>
+    <string name="students_class">Class</string>
+    <string name="students_search">Search</string>
+    <string name="students_none_found">No students found</string>
+    <string name="children_title">My Children</string>
+    <string name="children_none">No children are linked to your account yet.\nPlease contact the school office.</string>
+    <string name="student_detail_title">Student</string>
+    <string name="student_class_roll">Class %1$s-%2$s · Roll %3$s</string>
+    <string name="student_dob">Date of birth: %1$s</string>
+    <string name="action_attendance_history">Attendance history</string>
+    <string name="action_exam_results">Exam results</string>
+    <string name="action_class_timetable">Class timetable</string>
+    <string name="action_homework">Homework</string>
+    <string name="action_fees">Fees</string>
+    <string name="action_bus_tracking">Bus tracking</string>
+    <string name="action_library">Library</string>
+
+    <!-- Attendance -->
+    <string name="attendance_mark_title">Mark Attendance</string>
+    <string name="attendance_saving">Saving…</string>
+    <string name="attendance_save">Save attendance</string>
+    <string name="attendance_queued_offline">%1$d queued offline</string>
+    <string name="attendance_sync">Sync</string>
+    <string name="attendance_class">Class</string>
+    <string name="attendance_section">Section</string>
+    <string name="attendance_date">Date</string>
+    <string name="attendance_load_students">Load students</string>
+    <string name="attendance_already_marked">Attendance already exists for this date — saved marks are pre-selected.</string>
+    <string name="attendance_history_title">Attendance</string>
+    <string name="attendance_history_title_named">Attendance · %1$s</string>
+    <string name="attendance_none">No attendance records yet</string>
+    <string name="attendance_percent">%1$d%% attendance</string>
+
+    <!-- Timetable -->
+    <string name="timetable_title">Timetable</string>
+    <string name="timetable_class">Class</string>
+    <string name="timetable_section">Section</string>
+    <string name="timetable_view">View</string>
+    <string name="timetable_enter_class_section">Enter a class and section to view the timetable</string>
+    <string name="timetable_none_published">No timetable published for this class yet</string>
+    <string name="day_monday">Monday</string>
+    <string name="day_tuesday">Tuesday</string>
+    <string name="day_wednesday">Wednesday</string>
+    <string name="day_thursday">Thursday</string>
+    <string name="day_friday">Friday</string>
+    <string name="day_saturday">Saturday</string>
+    <string name="day_sunday">Sunday</string>
+    <string name="timetable_period">P%1$d</string>
+
+    <!-- Notices -->
+    <string name="notices_title">Notices</string>
+    <string name="notices_none">No notices yet</string>
+
+    <!-- Exam results -->
+    <string name="exam_results_title">Exam Results</string>
+    <string name="exam_results_title_named">Results · %1$s</string>
+    <string name="exam_results_download">Download report card</string>
+    <string name="exam_results_downloading">Downloading…</string>
+    <string name="exam_results_share_intent">Share report card</string>
+    <string name="exam_results_none">No exam results published yet</string>
+
+    <!-- Leave requests -->
+    <string name="leave_requests_title">Leave Requests</string>
+    <string name="leave_status_all">All</string>
+    <string name="leave_none_admin">No leave requests to review</string>
+    <string name="leave_none_user">You haven\'t submitted any leave requests yet</string>
+    <string name="leave_submit_title">Submit a leave request</string>
+    <string name="leave_from">From</string>
+    <string name="leave_to">To</string>
+    <string name="leave_reason_optional">Reason (optional)</string>
+    <string name="leave_submitting">Submitting…</string>
+    <string name="leave_submit_request">Submit request</string>
+    <string name="leave_submitted">Leave request submitted.</string>
+    <string name="leave_approve">Approve</string>
+    <string name="leave_reject">Reject</string>
+
+    <!-- Fees -->
+    <string name="fees_title">Fees</string>
+    <string name="fees_title_named">Fees · %1$s</string>
+    <string name="fees_none">No fee records yet</string>
+    <string name="fees_total_due">Total due</string>
+    <string name="fees_paid">Paid</string>
+    <string name="fees_outstanding">Outstanding</string>
+    <string name="fees_paid_of">%1$s paid of %2$s</string>
+    <string name="fees_due_by">Due by %1$s</string>
+    <string name="fees_opening">Opening…</string>
+    <string name="fees_pay_now">Pay Now</string>
+    <string name="fees_payment_submitted">Payment submitted. It may take a few minutes to reflect here.</string>
+
+    <!-- Homework -->
+    <string name="homework_title">Homework</string>
+    <string name="homework_class">Class</string>
+    <string name="homework_section">Section</string>
+    <string name="homework_view">View</string>
+    <string name="homework_post_fab">Post homework</string>
+    <string name="homework_enter_class_section">Enter a class and section to view homework</string>
+    <string name="homework_none">No homework posted yet</string>
+    <string name="homework_due">Due %1$s</string>
+    <string name="homework_view_file">View file</string>
+    <string name="homework_uploading">Uploading…</string>
+    <string name="homework_submit">Submit</string>
+    <string name="homework_grade_prefix">Grade: %1$s</string>
+    <string name="homework_hide_submissions">Hide submissions</string>
+    <string name="homework_view_submissions">View submissions</string>
+    <string name="homework_none_submissions">No submissions yet</string>
+    <string name="homework_edit_grade">Edit grade</string>
+    <string name="homework_grade">Grade</string>
+    <string name="homework_save">Save</string>
+    <string name="homework_feedback_optional">Feedback (optional)</string>
+    <string name="homework_open_intent">Open submission</string>
+    <string name="homework_create_title">Post Homework</string>
+    <string name="homework_subject">Subject</string>
+    <string name="homework_title_field">Title</string>
+    <string name="homework_description_optional">Description (optional)</string>
+    <string name="homework_due_date">Due date</string>
+    <string name="homework_posting">Posting…</string>
+    <string name="homework_post_button">Post homework</string>
+
+    <!-- Messaging -->
+    <string name="messages_title">Messages</string>
+    <string name="messages_none_parent">You\'ll see your children\'s teachers here once they\'re assigned to a class.</string>
+    <string name="messages_none_teacher">You\'ll see parents of your students here once you\'re assigned to a class.</string>
+    <string name="messages_start_new">START A NEW CONVERSATION</string>
+    <string name="messages_type_hint">Type a message…</string>
+    <string name="messages_send">Send</string>
+    <string name="messages_none_yet">No messages yet. Say hello!</string>
+
+    <!-- Events -->
+    <string name="events_title">Events</string>
+    <string name="events_none">No upcoming events</string>
+    <string name="events_add_fab">Add event</string>
+    <string name="events_going">Going</string>
+    <string name="events_maybe">Maybe</string>
+    <string name="events_cant_go">Can\'t go</string>
+    <string name="events_hide_rsvps">Hide RSVPs</string>
+    <string name="events_view_rsvps">View RSVPs</string>
+    <string name="events_none_responses">No responses yet</string>
+    <string name="events_create_title">Add Event</string>
+    <string name="events_title_field">Title</string>
+    <string name="events_date">Date</string>
+    <string name="events_location_optional">Location (optional)</string>
+    <string name="events_description_optional">Description (optional)</string>
+    <string name="events_creating">Creating…</string>
+    <string name="events_create_button">Create event</string>
+    <string name="events_date_location">Date %1$s</string>
+
+    <!-- Transport -->
+    <string name="transport_title">Bus Tracking</string>
+    <string name="transport_title_named">Bus · %1$s</string>
+    <string name="transport_not_assigned">This student is not yet assigned to a bus route.</string>
+    <string name="transport_route_stop">Route %1$s · Stop %2$s</string>
+    <string name="transport_no_location">No location reported yet — the bus\'s GPS device hasn\'t sent an update.</string>
+    <string name="transport_last_updated">Last updated %1$s</string>
+    <string name="transport_just_now">just now</string>
+    <string name="transport_marker_stop">Stop</string>
+    <string name="transport_marker_bus">Bus</string>
+
+    <!-- Library -->
+    <string name="library_title">Library</string>
+    <string name="library_title_named">Library · %1$s</string>
+    <string name="library_none">No books issued yet</string>
+    <string name="library_issued_due">Issued %1$s · Due %2$s</string>
+    <string name="library_returned">Returned %1$s</string>
+    <string name="library_fine">Fine: %1$s</string>
+    <string name="library_catalog_title">Book Catalog</string>
+    <string name="library_search_hint">Search title, author, or ISBN</string>
+    <string name="library_search_none">No books found</string>
+    <string name="library_search_prompt">Search the catalog above</string>
+    <string name="library_available">%1$d / %2$d available</string>
 </resources>

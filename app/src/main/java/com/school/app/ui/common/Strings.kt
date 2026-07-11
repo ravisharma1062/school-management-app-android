@@ -1,52 +1,43 @@
 package com.school.app.ui.common
 
+import android.content.Context
+import android.content.res.Resources
+import androidx.annotation.StringRes
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import com.school.app.domain.model.LanguageCode
+import java.util.Locale
+
+/** Provided once at the nav-host root from [com.school.app.data.auth.Session.preferredLanguage]. */
+val LocalLanguage = compositionLocalOf { LanguageCode.EN }
+
+private fun localizedResources(context: Context, lang: LanguageCode): Resources {
+    val locale = if (lang == LanguageCode.HI) Locale("hi") else Locale.ENGLISH
+    val config = android.content.res.Configuration(context.resources.configuration)
+    config.setLocale(locale)
+    return context.createConfigurationContext(config).resources
+}
 
 /**
- * Lightweight app-chrome translations (home screen, top bars, common actions).
- * Deep screen-level content stays English-only — same scope boundary as the web app's i18n rollout.
+ * Resolves a string resource in the current [LocalLanguage] regardless of the device's
+ * system locale, since language here is a per-user app preference, not a system setting.
  */
-private val EN: Map<String, String> = mapOf(
-    "app.title" to "School App",
-    "common.logOut" to "Log out",
-    "common.syncNow" to "Sync now",
-    "common.pendingSync" to "%d attendance mark%s waiting to sync",
-    "home.hello" to "Hello, %s",
-    "role.ADMIN" to "Admin",
-    "role.TEACHER" to "Teacher",
-    "role.PARENT" to "Parent",
-    "feature.markAttendance" to "Mark Attendance",
-    "feature.students" to "Students",
-    "feature.myChildren" to "My Children",
-    "feature.timetable" to "Timetable",
-    "feature.homework" to "Homework",
-    "feature.notices" to "Notices",
-    "feature.leaveRequests" to "Leave Requests",
-    "feature.events" to "Events",
-    "feature.messages" to "Messages",
-)
+@Composable
+fun stringRes(@StringRes id: Int, vararg formatArgs: Any): String {
+    val context = LocalContext.current
+    val lang = LocalLanguage.current
+    val resources = remember(lang) { localizedResources(context, lang) }
+    return if (formatArgs.isEmpty()) resources.getString(id) else resources.getString(id, *formatArgs)
+}
 
-private val HI: Map<String, String> = mapOf(
-    "app.title" to "स्कूल ऐप",
-    "common.logOut" to "लॉग आउट",
-    "common.syncNow" to "अभी सिंक करें",
-    "common.pendingSync" to "%d उपस्थिति प्रविष्टियां सिंक होने की प्रतीक्षा में",
-    "home.hello" to "नमस्ते, %s",
-    "role.ADMIN" to "प्रशासक",
-    "role.TEACHER" to "शिक्षक",
-    "role.PARENT" to "अभिभावक",
-    "feature.markAttendance" to "उपस्थिति दर्ज करें",
-    "feature.students" to "छात्र",
-    "feature.myChildren" to "मेरे बच्चे",
-    "feature.timetable" to "समय सारिणी",
-    "feature.homework" to "गृहकार्य",
-    "feature.notices" to "सूचनाएं",
-    "feature.leaveRequests" to "अवकाश अनुरोध",
-    "feature.events" to "कार्यक्रम",
-    "feature.messages" to "संदेश",
-)
-
-fun t(lang: LanguageCode, key: String, vararg args: Any): String {
-    val template = (if (lang == LanguageCode.HI) HI else EN)[key] ?: EN[key] ?: key
-    return if (args.isEmpty()) template else String.format(template, *args)
+@Composable
+fun roleLabel(roleName: String): String {
+    val id = when (roleName) {
+        "TEACHER" -> com.school.app.R.string.role_teacher
+        "PARENT" -> com.school.app.R.string.role_parent
+        else -> com.school.app.R.string.role_admin
+    }
+    return stringRes(id)
 }

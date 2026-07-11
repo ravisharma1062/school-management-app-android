@@ -46,6 +46,7 @@ import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.school.app.BuildConfig
+import com.school.app.R
 import com.school.app.domain.model.Homework
 import com.school.app.domain.model.HomeworkSubmission
 import com.school.app.domain.model.HomeworkSubmissionStatus
@@ -59,6 +60,7 @@ import com.school.app.ui.common.EmptyState
 import com.school.app.ui.common.ErrorState
 import com.school.app.ui.common.StatusChip
 import com.school.app.ui.common.formatDate
+import com.school.app.ui.common.stringRes
 import com.school.app.viewmodel.HomeworkCreateViewModel
 import com.school.app.viewmodel.HomeworkListViewModel
 
@@ -84,6 +86,7 @@ fun HomeworkListScreen(
         }
     }
 
+    val openSubmissionTitle = stringRes(R.string.homework_open_intent)
     LaunchedEffect(viewModel.downloadedFile) {
         val file = viewModel.downloadedFile ?: return@LaunchedEffect
         val uri = FileProvider.getUriForFile(context, "${BuildConfig.APPLICATION_ID}.fileprovider", file)
@@ -91,17 +94,17 @@ fun HomeworkListScreen(
             setDataAndType(uri, context.contentResolver.getType(uri) ?: "*/*")
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-        context.startActivity(Intent.createChooser(intent, "Open submission"))
+        context.startActivity(Intent.createChooser(intent, openSubmissionTitle))
         viewModel.consumeDownloadedFile()
     }
 
     Scaffold(
-        topBar = { AppTopBar("Homework", onBack) },
+        topBar = { AppTopBar(stringRes(R.string.homework_title), onBack) },
         floatingActionButton = {
             val loaded = state.loadedFor
             if (role == Role.TEACHER && loaded != null) {
                 FloatingActionButton(onClick = { onCreate(loaded.first, loaded.second) }) {
-                    Icon(Icons.Default.Add, contentDescription = "Post homework")
+                    Icon(Icons.Default.Add, contentDescription = stringRes(R.string.homework_post_fab))
                 }
             }
         },
@@ -120,21 +123,21 @@ fun HomeworkListScreen(
                 OutlinedTextField(
                     value = viewModel.studentClass,
                     onValueChange = { viewModel.studentClass = it },
-                    label = { Text("Class") },
+                    label = { Text(stringRes(R.string.homework_class)) },
                     singleLine = true,
                     modifier = Modifier.weight(1f),
                 )
                 OutlinedTextField(
                     value = viewModel.section,
                     onValueChange = { viewModel.section = it },
-                    label = { Text("Section") },
+                    label = { Text(stringRes(R.string.homework_section)) },
                     singleLine = true,
                     modifier = Modifier.weight(1f),
                 )
                 Button(
                     onClick = viewModel::refresh,
                     modifier = Modifier.align(Alignment.CenterVertically),
-                ) { Text("View") }
+                ) { Text(stringRes(R.string.homework_view)) }
             }
 
             CacheBanner(state.fromCache)
@@ -144,8 +147,8 @@ fun HomeworkListScreen(
                 state.error != null && state.items.isEmpty() && state.loadedFor != null ->
                     ErrorState(state.error, onRetry = viewModel::refresh)
                 state.loadedFor == null ->
-                    EmptyState(state.error ?: "Enter a class and section to view homework")
-                state.items.isEmpty() -> EmptyState("No homework posted yet")
+                    EmptyState(state.error ?: stringRes(R.string.homework_enter_class_section))
+                state.items.isEmpty() -> EmptyState(stringRes(R.string.homework_none))
                 else -> LazyColumn(
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -192,7 +195,7 @@ private fun HomeworkCard(homework: Homework, role: Role, viewModel: HomeworkList
                 )
             }
             Text(
-                "Due ${formatDate(homework.dueDate)}",
+                stringRes(R.string.homework_due, formatDate(homework.dueDate)),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 8.dp),
@@ -234,16 +237,16 @@ private fun ChildSubmissionRow(homework: Homework, child: Student, viewModel: Ho
         Text(child.name, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
         if (submission != null) {
             StatusChip(submission.status.name, submission.status.chipColor())
-            TextButton(onClick = { viewModel.downloadSubmissionFile(submission) }) { Text("View") }
+            TextButton(onClick = { viewModel.downloadSubmissionFile(submission) }) { Text(stringRes(R.string.common_view)) }
         } else {
             TextButton(onClick = { launcher.launch("*/*") }, enabled = !submitting) {
-                Text(if (submitting) "Uploading…" else "Submit")
+                Text(stringRes(if (submitting) R.string.homework_uploading else R.string.homework_submit))
             }
         }
     }
     submission?.grade?.let {
         Text(
-            "Grade: $it",
+            stringRes(R.string.homework_grade_prefix, it),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -256,7 +259,7 @@ private fun TeacherSubmissionsSection(homework: Homework, viewModel: HomeworkLis
 
     HorizontalDivider(Modifier.padding(vertical = 8.dp))
     TextButton(onClick = { viewModel.toggleExpanded(homework.id) }) {
-        Text(if (expanded) "Hide submissions" else "View submissions")
+        Text(stringRes(if (expanded) R.string.homework_hide_submissions else R.string.homework_view_submissions))
     }
 
     if (expanded) {
@@ -264,7 +267,7 @@ private fun TeacherSubmissionsSection(homework: Homework, viewModel: HomeworkLis
         when {
             submissions == null -> CircularProgressIndicator(Modifier.width(20.dp))
             submissions.isEmpty() -> Text(
-                "No submissions yet",
+                stringRes(R.string.homework_none_submissions),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -289,9 +292,9 @@ private fun SubmissionGradingRow(homeworkId: String, submission: HomeworkSubmiss
             StatusChip(submission.status.name, submission.status.chipColor())
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            TextButton(onClick = { viewModel.downloadSubmissionFile(submission) }) { Text("View file") }
+            TextButton(onClick = { viewModel.downloadSubmissionFile(submission) }) { Text(stringRes(R.string.homework_view_file)) }
             TextButton(onClick = { grading = !grading }) {
-                Text(if (submission.status == HomeworkSubmissionStatus.GRADED) "Edit grade" else "Grade")
+                Text(stringRes(if (submission.status == HomeworkSubmissionStatus.GRADED) R.string.homework_edit_grade else R.string.homework_grade))
             }
         }
         if (grading) {
@@ -299,7 +302,7 @@ private fun SubmissionGradingRow(homeworkId: String, submission: HomeworkSubmiss
                 OutlinedTextField(
                     value = grade,
                     onValueChange = { grade = it },
-                    label = { Text("Grade") },
+                    label = { Text(stringRes(R.string.homework_grade)) },
                     singleLine = true,
                     modifier = Modifier.width(100.dp),
                 )
@@ -307,17 +310,17 @@ private fun SubmissionGradingRow(homeworkId: String, submission: HomeworkSubmiss
                 Button(onClick = {
                     viewModel.grade(submission.id, homeworkId, grade, feedback.ifBlank { null })
                     grading = false
-                }) { Text("Save") }
+                }) { Text(stringRes(R.string.homework_save)) }
             }
             OutlinedTextField(
                 value = feedback,
                 onValueChange = { feedback = it },
-                label = { Text("Feedback (optional)") },
+                label = { Text(stringRes(R.string.homework_feedback_optional)) },
                 modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
             )
         } else if (submission.grade != null) {
             Text(
-                "Grade: ${submission.grade}" + (submission.teacherFeedback?.let { " — $it" } ?: ""),
+                stringRes(R.string.homework_grade_prefix, submission.grade!!) + (submission.teacherFeedback?.let { " — $it" } ?: ""),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -339,7 +342,7 @@ fun HomeworkCreateScreen(
         if (viewModel.created) onDone()
     }
 
-    Scaffold(topBar = { AppTopBar("Post Homework", onDone) }) { padding ->
+    Scaffold(topBar = { AppTopBar(stringRes(R.string.homework_create_title), onDone) }) { padding ->
         Column(
             Modifier
                 .fillMaxSize()
@@ -351,14 +354,14 @@ fun HomeworkCreateScreen(
                 OutlinedTextField(
                     value = viewModel.studentClass,
                     onValueChange = { viewModel.studentClass = it },
-                    label = { Text("Class") },
+                    label = { Text(stringRes(R.string.homework_class)) },
                     singleLine = true,
                     modifier = Modifier.weight(1f),
                 )
                 OutlinedTextField(
                     value = viewModel.section,
                     onValueChange = { viewModel.section = it },
-                    label = { Text("Section") },
+                    label = { Text(stringRes(R.string.homework_section)) },
                     singleLine = true,
                     modifier = Modifier.weight(1f),
                 )
@@ -367,7 +370,7 @@ fun HomeworkCreateScreen(
             OutlinedTextField(
                 value = viewModel.subject,
                 onValueChange = { viewModel.subject = it },
-                label = { Text("Subject") },
+                label = { Text(stringRes(R.string.homework_subject)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -375,7 +378,7 @@ fun HomeworkCreateScreen(
             OutlinedTextField(
                 value = viewModel.title,
                 onValueChange = { viewModel.title = it },
-                label = { Text("Title") },
+                label = { Text(stringRes(R.string.homework_title_field)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -383,13 +386,13 @@ fun HomeworkCreateScreen(
             OutlinedTextField(
                 value = viewModel.description,
                 onValueChange = { viewModel.description = it },
-                label = { Text("Description (optional)") },
+                label = { Text(stringRes(R.string.homework_description_optional)) },
                 minLines = 3,
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(8.dp))
             DatePickerField(
-                label = "Due date",
+                label = stringRes(R.string.homework_due_date),
                 date = viewModel.dueDate,
                 onDateChange = { viewModel.dueDate = it },
                 modifier = Modifier.fillMaxWidth(),
@@ -411,7 +414,7 @@ fun HomeworkCreateScreen(
                     .fillMaxWidth()
                     .padding(top = 24.dp),
             ) {
-                Text(if (viewModel.submitting) "Posting…" else "Post homework")
+                Text(stringRes(if (viewModel.submitting) R.string.homework_posting else R.string.homework_post_button))
             }
         }
     }

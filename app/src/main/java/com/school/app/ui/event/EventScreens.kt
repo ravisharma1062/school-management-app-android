@@ -38,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import com.school.app.R
 import com.school.app.domain.model.Role
 import com.school.app.domain.model.RsvpStatus
 import com.school.app.domain.model.SchoolEvent
@@ -48,6 +49,7 @@ import com.school.app.ui.common.EmptyState
 import com.school.app.ui.common.ErrorState
 import com.school.app.ui.common.StatusChip
 import com.school.app.ui.common.formatDate
+import com.school.app.ui.common.stringRes
 import com.school.app.viewmodel.EventCreateViewModel
 import com.school.app.viewmodel.EventsListViewModel
 
@@ -67,11 +69,11 @@ fun EventsListScreen(
     }
 
     Scaffold(
-        topBar = { AppTopBar("Events", onBack) },
+        topBar = { AppTopBar(stringRes(R.string.events_title), onBack) },
         floatingActionButton = {
             if (isAdmin) {
                 FloatingActionButton(onClick = onCreate) {
-                    Icon(Icons.Default.Add, contentDescription = "Add event")
+                    Icon(Icons.Default.Add, contentDescription = stringRes(R.string.events_add_fab))
                 }
             }
         },
@@ -80,7 +82,7 @@ fun EventsListScreen(
             when {
                 state.loading && state.items.isEmpty() -> CenteredLoading()
                 state.error != null && state.items.isEmpty() -> ErrorState(state.error, onRetry = viewModel::refresh)
-                state.items.isEmpty() -> EmptyState("No upcoming events")
+                state.items.isEmpty() -> EmptyState(stringRes(R.string.events_none))
                 else -> LazyColumn(
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -108,7 +110,7 @@ private fun EventCard(event: SchoolEvent, isAdmin: Boolean, viewModel: EventsLis
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.weight(1f),
                 )
-                event.myRsvpStatus?.let { StatusChip(it.label(), it.chipColor()) }
+                event.myRsvpStatus?.let { StatusChip(rsvpLabel(it), it.chipColor()) }
             }
             event.description?.takeIf { it.isNotBlank() }?.let {
                 Text(
@@ -119,7 +121,7 @@ private fun EventCard(event: SchoolEvent, isAdmin: Boolean, viewModel: EventsLis
                 )
             }
             Text(
-                "Date ${formatDate(event.eventDate)}" + (event.location?.let { " · $it" } ?: ""),
+                stringRes(R.string.events_date_location, formatDate(event.eventDate)) + (event.location?.let { " · $it" } ?: ""),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 8.dp),
@@ -137,20 +139,20 @@ private fun EventCard(event: SchoolEvent, isAdmin: Boolean, viewModel: EventsLis
                             containerColor = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
                             contentColor = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
                         ),
-                    ) { Text(status.label()) }
+                    ) { Text(rsvpLabel(status)) }
                 }
             }
 
             if (isAdmin) {
                 TextButton(onClick = { viewModel.toggleRsvps(event.id) }) {
-                    Text(if (expanded) "Hide RSVPs" else "View RSVPs")
+                    Text(stringRes(if (expanded) R.string.events_hide_rsvps else R.string.events_view_rsvps))
                 }
                 if (expanded) {
                     val rsvps = viewModel.rsvpsByEventId[event.id]
                     when {
                         rsvps == null -> CircularProgressIndicator(Modifier.size(20.dp))
                         rsvps.isEmpty() -> Text(
-                            "No responses yet",
+                            stringRes(R.string.events_none_responses),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -158,7 +160,7 @@ private fun EventCard(event: SchoolEvent, isAdmin: Boolean, viewModel: EventsLis
                             rsvps.forEach { r ->
                                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                                     Text(r.userName, style = MaterialTheme.typography.bodySmall)
-                                    StatusChip(r.status.label(), r.status.chipColor())
+                                    StatusChip(rsvpLabel(r.status), r.status.chipColor())
                                 }
                             }
                         }
@@ -169,10 +171,11 @@ private fun EventCard(event: SchoolEvent, isAdmin: Boolean, viewModel: EventsLis
     }
 }
 
-private fun RsvpStatus.label() = when (this) {
-    RsvpStatus.GOING -> "Going"
-    RsvpStatus.MAYBE -> "Maybe"
-    RsvpStatus.NOT_GOING -> "Can't go"
+@Composable
+private fun rsvpLabel(status: RsvpStatus): String = when (status) {
+    RsvpStatus.GOING -> stringRes(R.string.events_going)
+    RsvpStatus.MAYBE -> stringRes(R.string.events_maybe)
+    RsvpStatus.NOT_GOING -> stringRes(R.string.events_cant_go)
 }
 
 private fun RsvpStatus.chipColor() = when (this) {
@@ -190,7 +193,7 @@ fun EventCreateScreen(
         if (viewModel.created) onDone()
     }
 
-    Scaffold(topBar = { AppTopBar("Add Event", onDone) }) { padding ->
+    Scaffold(topBar = { AppTopBar(stringRes(R.string.events_create_title), onDone) }) { padding ->
         Column(
             Modifier
                 .fillMaxSize()
@@ -201,13 +204,13 @@ fun EventCreateScreen(
             OutlinedTextField(
                 value = viewModel.title,
                 onValueChange = { viewModel.title = it },
-                label = { Text("Title") },
+                label = { Text(stringRes(R.string.events_title_field)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(8.dp))
             DatePickerField(
-                label = "Date",
+                label = stringRes(R.string.events_date),
                 date = viewModel.eventDate,
                 onDateChange = { viewModel.eventDate = it },
                 modifier = Modifier.fillMaxWidth(),
@@ -216,7 +219,7 @@ fun EventCreateScreen(
             OutlinedTextField(
                 value = viewModel.location,
                 onValueChange = { viewModel.location = it },
-                label = { Text("Location (optional)") },
+                label = { Text(stringRes(R.string.events_location_optional)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -224,7 +227,7 @@ fun EventCreateScreen(
             OutlinedTextField(
                 value = viewModel.description,
                 onValueChange = { viewModel.description = it },
-                label = { Text("Description (optional)") },
+                label = { Text(stringRes(R.string.events_description_optional)) },
                 minLines = 3,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -245,7 +248,7 @@ fun EventCreateScreen(
                     .fillMaxWidth()
                     .padding(top = 24.dp),
             ) {
-                Text(if (viewModel.submitting) "Creating…" else "Create event")
+                Text(stringRes(if (viewModel.submitting) R.string.events_creating else R.string.events_create_button))
             }
         }
     }

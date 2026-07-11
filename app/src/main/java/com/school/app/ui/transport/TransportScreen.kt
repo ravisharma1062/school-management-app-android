@@ -17,10 +17,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.school.app.R
 import com.school.app.ui.common.AppTopBar
 import com.school.app.ui.common.CenteredLoading
 import com.school.app.ui.common.EmptyState
 import com.school.app.ui.common.formatDateTime
+import com.school.app.ui.common.stringRes
 import com.school.app.viewmodel.TransportViewModel
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -33,14 +35,18 @@ fun TransportScreen(
     onBack: () -> Unit,
     viewModel: TransportViewModel = hiltViewModel(),
 ) {
-    val title = if (viewModel.studentName.isNotBlank()) "Bus · ${viewModel.studentName}" else "Bus Tracking"
+    val title = if (viewModel.studentName.isNotBlank()) {
+        stringRes(R.string.transport_title_named, viewModel.studentName)
+    } else {
+        stringRes(R.string.transport_title)
+    }
 
     Scaffold(topBar = { AppTopBar(title, onBack) }) { padding ->
         Box(Modifier.padding(padding)) {
             when {
                 viewModel.loading -> CenteredLoading()
                 viewModel.assignment == null ->
-                    EmptyState(viewModel.error ?: "This student is not yet assigned to a bus route.")
+                    EmptyState(viewModel.error ?: stringRes(R.string.transport_not_assigned))
                 else -> AssignedContent(viewModel)
             }
         }
@@ -54,19 +60,20 @@ private fun AssignedContent(viewModel: TransportViewModel) {
 
     Column(Modifier.fillMaxSize().padding(16.dp)) {
         Text(
-            "Route ${assignment.routeName} · Stop ${assignment.stopName}",
+            stringRes(R.string.transport_route_stop, assignment.routeName, assignment.stopName),
             style = MaterialTheme.typography.bodyMedium,
         )
         if (location?.latitude == null || location.longitude == null) {
             Text(
-                "No location reported yet — the bus's GPS device hasn't sent an update.",
+                stringRes(R.string.transport_no_location),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(top = 4.dp),
             )
         } else {
+            val justNow = stringRes(R.string.transport_just_now)
             Text(
-                "Last updated ${location.updatedAt?.let { formatDateTime(it) } ?: "just now"}",
+                stringRes(R.string.transport_last_updated, location.updatedAt?.let { formatDateTime(it) } ?: justNow),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 4.dp),
@@ -92,6 +99,8 @@ private fun AssignedContent(viewModel: TransportViewModel) {
 @Composable
 private fun BusMapView(stopLat: Double, stopLng: Double, busLat: Double?, busLng: Double?) {
     val context = LocalContext.current
+    val stopLabel = stringRes(R.string.transport_marker_stop)
+    val busLabel = stringRes(R.string.transport_marker_bus)
 
     AndroidView(
         modifier = Modifier.fillMaxSize(),
@@ -109,7 +118,7 @@ private fun BusMapView(stopLat: Double, stopLng: Double, busLat: Double?, busLng
             mapView.overlays.add(
                 Marker(mapView).apply {
                     position = stopPoint
-                    title = "Stop"
+                    title = stopLabel
                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                 },
             )
@@ -119,7 +128,7 @@ private fun BusMapView(stopLat: Double, stopLng: Double, busLat: Double?, busLng
                 mapView.overlays.add(
                     Marker(mapView).apply {
                         position = busPoint
-                        title = "Bus"
+                        title = busLabel
                         setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                     },
                 )

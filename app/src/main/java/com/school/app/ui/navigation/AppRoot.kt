@@ -2,6 +2,7 @@ package com.school.app.ui.navigation
 
 import android.net.Uri
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -16,6 +17,7 @@ import com.school.app.ui.attendance.AttendanceHistoryScreen
 import com.school.app.ui.attendance.AttendanceMarkScreen
 import com.school.app.ui.auth.LoginScreen
 import com.school.app.ui.common.CenteredLoading
+import com.school.app.ui.common.LocalLanguage
 import com.school.app.ui.event.EventCreateScreen
 import com.school.app.ui.event.EventsListScreen
 import com.school.app.ui.examresult.ExamResultsScreen
@@ -24,6 +26,7 @@ import com.school.app.ui.home.HomeScreen
 import com.school.app.ui.homework.HomeworkCreateScreen
 import com.school.app.ui.homework.HomeworkListScreen
 import com.school.app.ui.leaverequest.LeaveRequestsScreen
+import com.school.app.ui.library.LibraryCatalogScreen
 import com.school.app.ui.library.LibraryScreen
 import com.school.app.ui.messaging.ConversationThreadScreen
 import com.school.app.ui.messaging.MessagesListScreen
@@ -56,6 +59,7 @@ object Routes {
     const val EVENT_CREATE = "events/create"
     const val TRANSPORT = "transport/{studentId}?name={name}"
     const val LIBRARY = "library/{studentId}?name={name}"
+    const val LIBRARY_CATALOG = "library/catalog"
 
     fun studentDetail(id: String) = "student/$id"
     fun attendanceHistory(id: String, name: String) =
@@ -94,6 +98,7 @@ private fun MainNavHost(session: Session, onLogout: () -> Unit) {
         defaultValue = ""
     }
 
+    CompositionLocalProvider(LocalLanguage provides session.preferredLanguage) {
     NavHost(navController = navController, startDestination = Routes.HOME) {
         composable(Routes.HOME) {
             HomeScreen(
@@ -213,5 +218,9 @@ private fun MainNavHost(session: Session, onLogout: () -> Unit) {
         ) {
             LibraryScreen(onBack = { navController.popBackStack() })
         }
+        composable(Routes.LIBRARY_CATALOG) {
+            LibraryCatalogScreen(onBack = { navController.popBackStack() })
+        }
+    }
     }
 }

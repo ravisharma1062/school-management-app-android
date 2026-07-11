@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.school.app.R
 import com.school.app.domain.model.Role
 import com.school.app.domain.model.Student
 import com.school.app.ui.common.AppTopBar
@@ -44,6 +45,7 @@ import com.school.app.ui.common.CenteredLoading
 import com.school.app.ui.common.EmptyState
 import com.school.app.ui.common.ErrorState
 import com.school.app.ui.common.formatDate
+import com.school.app.ui.common.stringRes
 import com.school.app.ui.navigation.Routes
 import com.school.app.viewmodel.ChildrenViewModel
 import com.school.app.viewmodel.StudentDetailViewModel
@@ -57,7 +59,7 @@ fun StudentsScreen(
     viewModel: StudentsViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state
-    Scaffold(topBar = { AppTopBar("Students", onBack) }) { padding ->
+    Scaffold(topBar = { AppTopBar(stringRes(R.string.students_title), onBack) }) { padding ->
         Column(Modifier.padding(padding)) {
             Row(
                 Modifier
@@ -68,21 +70,21 @@ fun StudentsScreen(
                 OutlinedTextField(
                     value = viewModel.nameFilter,
                     onValueChange = { viewModel.nameFilter = it },
-                    label = { Text("Name") },
+                    label = { Text(stringRes(R.string.students_name)) },
                     singleLine = true,
                     modifier = Modifier.weight(1f),
                 )
                 OutlinedTextField(
                     value = viewModel.classFilter,
                     onValueChange = { viewModel.classFilter = it },
-                    label = { Text("Class") },
+                    label = { Text(stringRes(R.string.students_class)) },
                     singleLine = true,
                     modifier = Modifier.width(90.dp),
                 )
                 Button(
                     onClick = viewModel::refresh,
                     modifier = Modifier.align(Alignment.CenterVertically),
-                ) { Text("Search") }
+                ) { Text(stringRes(R.string.students_search)) }
             }
 
             Box(Modifier.weight(1f)) {
@@ -90,7 +92,7 @@ fun StudentsScreen(
                     state.loading -> CenteredLoading()
                     state.error != null && state.items.isEmpty() ->
                         ErrorState(state.error, onRetry = viewModel::refresh)
-                    state.items.isEmpty() -> EmptyState("No students found")
+                    state.items.isEmpty() -> EmptyState(stringRes(R.string.students_none_found))
                     else -> LazyColumn(
                         contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -122,14 +124,14 @@ fun ChildrenScreen(
     onChildClick: (Student) -> Unit,
     viewModel: ChildrenViewModel = hiltViewModel(),
 ) {
-    Scaffold(topBar = { AppTopBar("My Children", onBack) }) { padding ->
+    Scaffold(topBar = { AppTopBar(stringRes(R.string.children_title), onBack) }) { padding ->
         Box(Modifier.padding(padding)) {
             when (val state = viewModel.state) {
                 UiState.Loading -> CenteredLoading()
                 is UiState.Error -> ErrorState(state.message, onRetry = viewModel::load)
                 is UiState.Ready -> {
                     if (state.data.isEmpty()) {
-                        EmptyState("No children are linked to your account yet.\nPlease contact the school office.")
+                        EmptyState(stringRes(R.string.children_none))
                     } else {
                         LazyColumn(
                             contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
@@ -162,7 +164,7 @@ private fun StudentCard(student: Student, onClick: () -> Unit) {
                     fontWeight = FontWeight.SemiBold,
                 )
                 Text(
-                    "Class ${student.studentClass}-${student.section} · Roll ${student.rollNo}",
+                    stringRes(R.string.student_class_roll, student.studentClass, student.section, student.rollNo),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -179,7 +181,7 @@ fun StudentDetailScreen(
     onNavigate: (String) -> Unit,
     viewModel: StudentDetailViewModel = hiltViewModel(),
 ) {
-    Scaffold(topBar = { AppTopBar("Student", onBack) }) { padding ->
+    Scaffold(topBar = { AppTopBar(stringRes(R.string.student_detail_title), onBack) }) { padding ->
         Box(Modifier.padding(padding)) {
             when (val state = viewModel.state) {
                 UiState.Loading -> CenteredLoading()
@@ -210,12 +212,12 @@ private fun StudentDetailContent(
                     fontWeight = FontWeight.SemiBold,
                 )
                 Text(
-                    "Class ${student.studentClass}-${student.section} · Roll ${student.rollNo}",
+                    stringRes(R.string.student_class_roll, student.studentClass, student.section, student.rollNo),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
-                    "Date of birth: ${formatDate(student.dob)}",
+                    stringRes(R.string.student_dob, formatDate(student.dob)),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -224,35 +226,35 @@ private fun StudentDetailContent(
 
         Card(Modifier.fillMaxWidth()) {
             Column {
-                ActionRow(Icons.Default.ChecklistRtl, "Attendance history") {
+                ActionRow(Icons.Default.ChecklistRtl, stringRes(R.string.action_attendance_history)) {
                     onNavigate(Routes.attendanceHistory(student.id, student.name))
                 }
                 HorizontalDivider()
-                ActionRow(Icons.Default.WorkspacePremium, "Exam results") {
+                ActionRow(Icons.Default.WorkspacePremium, stringRes(R.string.action_exam_results)) {
                     onNavigate(Routes.results(student.id, student.name))
                 }
                 HorizontalDivider()
-                ActionRow(Icons.Default.Schedule, "Class timetable") {
+                ActionRow(Icons.Default.Schedule, stringRes(R.string.action_class_timetable)) {
                     onNavigate(Routes.timetable(student.studentClass, student.section))
                 }
                 HorizontalDivider()
-                ActionRow(Icons.AutoMirrored.Filled.MenuBook, "Homework") {
+                ActionRow(Icons.AutoMirrored.Filled.MenuBook, stringRes(R.string.action_homework)) {
                     onNavigate(Routes.homework(student.studentClass, student.section))
                 }
                 // Fee access is ADMIN/PARENT-only on the backend.
                 if (role == Role.ADMIN || role == Role.PARENT) {
                     HorizontalDivider()
-                    ActionRow(Icons.AutoMirrored.Filled.ReceiptLong, "Fees") {
+                    ActionRow(Icons.AutoMirrored.Filled.ReceiptLong, stringRes(R.string.action_fees)) {
                         onNavigate(Routes.fees(student.id, student.name))
                     }
                 }
                 if (role == Role.PARENT) {
                     HorizontalDivider()
-                    ActionRow(Icons.Default.DirectionsBus, "Bus tracking") {
+                    ActionRow(Icons.Default.DirectionsBus, stringRes(R.string.action_bus_tracking)) {
                         onNavigate(Routes.transport(student.id, student.name))
                     }
                     HorizontalDivider()
-                    ActionRow(Icons.Default.LibraryBooks, "Library") {
+                    ActionRow(Icons.Default.LibraryBooks, stringRes(R.string.action_library)) {
                         onNavigate(Routes.library(student.id, student.name))
                     }
                 }

@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.school.app.R
 import com.school.app.domain.model.Notice
 import com.school.app.domain.model.TargetRole
 import com.school.app.ui.common.AppTopBar
@@ -29,6 +30,7 @@ import com.school.app.ui.common.EmptyState
 import com.school.app.ui.common.ErrorState
 import com.school.app.ui.common.StatusChip
 import com.school.app.ui.common.formatDateTime
+import com.school.app.ui.common.stringRes
 import com.school.app.viewmodel.NoticesViewModel
 
 @Composable
@@ -37,13 +39,13 @@ fun NoticesScreen(
     viewModel: NoticesViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state
-    Scaffold(topBar = { AppTopBar("Notices", onBack) }) { padding ->
+    Scaffold(topBar = { AppTopBar(stringRes(R.string.notices_title), onBack) }) { padding ->
         Box(Modifier.padding(padding)) {
             when {
                 state.loading -> CenteredLoading()
                 state.error != null && state.items.isEmpty() ->
                     ErrorState(state.error, onRetry = viewModel::refresh)
-                state.items.isEmpty() -> EmptyState("No notices yet")
+                state.items.isEmpty() -> EmptyState(stringRes(R.string.notices_none))
                 else -> LazyColumn(
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),

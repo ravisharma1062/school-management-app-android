@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.school.app.R
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -65,7 +66,7 @@ fun ErrorState(message: String, modifier: Modifier = Modifier, onRetry: (() -> U
         )
         if (onRetry != null) {
             Button(onClick = onRetry, modifier = Modifier.padding(top = 16.dp)) {
-                Text("Retry")
+                Text(stringRes(R.string.common_retry))
             }
         }
     }
@@ -106,7 +107,7 @@ fun CacheBanner(visible: Boolean) {
             tint = MaterialTheme.colorScheme.onTertiaryContainer,
         )
         Text(
-            "Offline — showing saved data",
+            stringRes(R.string.common_offline_banner),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onTertiaryContainer,
         )
@@ -134,7 +135,7 @@ fun AppTopBar(title: String, onBack: (() -> Unit)? = null, actions: @Composable 
         navigationIcon = {
             if (onBack != null) {
                 IconButton(onClick = onBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringRes(R.string.common_back))
                 }
             }
         },
@@ -158,7 +159,7 @@ fun DatePickerField(
         label = { Text(label) },
         trailingIcon = {
             IconButton(onClick = { showPicker = true }) {
-                Icon(Icons.Default.CalendarMonth, contentDescription = "Pick date")
+                Icon(Icons.Default.CalendarMonth, contentDescription = stringRes(R.string.common_pick_date))
             }
         },
         modifier = modifier,
@@ -179,10 +180,10 @@ fun DatePickerField(
                         }
                         showPicker = false
                     },
-                ) { Text("OK") }
+                ) { Text(stringRes(R.string.common_ok)) }
             },
             dismissButton = {
-                TextButton(onClick = { showPicker = false }) { Text("Cancel") }
+                TextButton(onClick = { showPicker = false }) { Text(stringRes(R.string.common_cancel)) }
             },
         ) {
             DatePicker(state = pickerState)

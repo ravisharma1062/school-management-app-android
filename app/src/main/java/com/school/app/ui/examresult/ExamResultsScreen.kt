@@ -25,12 +25,14 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.school.app.BuildConfig
+import com.school.app.R
 import com.school.app.domain.model.ExamResult
 import com.school.app.ui.common.AppTopBar
 import com.school.app.ui.common.CenteredLoading
 import com.school.app.ui.common.EmptyState
 import com.school.app.ui.common.ErrorState
 import com.school.app.ui.common.StatusChip
+import com.school.app.ui.common.stringRes
 import com.school.app.viewmodel.ExamResultsViewModel
 import com.school.app.viewmodel.UiState
 
@@ -40,11 +42,12 @@ fun ExamResultsScreen(
     viewModel: ExamResultsViewModel = hiltViewModel(),
 ) {
     val title = if (viewModel.studentName.isNotBlank()) {
-        "Results · ${viewModel.studentName}"
+        stringRes(R.string.exam_results_title_named, viewModel.studentName)
     } else {
-        "Exam Results"
+        stringRes(R.string.exam_results_title)
     }
     val context = LocalContext.current
+    val shareChooserTitle = stringRes(R.string.exam_results_share_intent)
 
     LaunchedEffect(viewModel.downloadedFile) {
         val file = viewModel.downloadedFile ?: return@LaunchedEffect
@@ -54,7 +57,7 @@ fun ExamResultsScreen(
             putExtra(Intent.EXTRA_STREAM, uri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-        context.startActivity(Intent.createChooser(intent, "Share report card"))
+        context.startActivity(Intent.createChooser(intent, shareChooserTitle))
         viewModel.consumeDownloadedFile()
     }
 
@@ -73,7 +76,7 @@ fun ExamResultsScreen(
                 Button(
                     onClick = viewModel::downloadReportCard,
                     enabled = !viewModel.downloading,
-                ) { Text(if (viewModel.downloading) "Downloading…" else "Download report card") }
+                ) { Text(stringRes(if (viewModel.downloading) R.string.exam_results_downloading else R.string.exam_results_download)) }
             }
 
             Box(Modifier.weight(1f)) {
@@ -82,7 +85,7 @@ fun ExamResultsScreen(
                     is UiState.Error -> ErrorState(state.message, onRetry = viewModel::load)
                     is UiState.Ready -> {
                         if (state.data.isEmpty()) {
-                            EmptyState("No exam results published yet")
+                            EmptyState(stringRes(R.string.exam_results_none))
                         } else {
                             ResultsList(state.data)
                         }

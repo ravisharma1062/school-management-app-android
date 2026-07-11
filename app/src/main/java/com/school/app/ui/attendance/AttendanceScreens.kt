@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.school.app.R
 import com.school.app.domain.model.AttendanceStatus
 import com.school.app.domain.model.attendancePercentage
 import com.school.app.ui.common.AppTopBar
@@ -40,6 +41,7 @@ import com.school.app.ui.common.ErrorState
 import com.school.app.ui.common.StatusChip
 import com.school.app.ui.common.color
 import com.school.app.ui.common.formatDate
+import com.school.app.ui.common.stringRes
 import com.school.app.viewmodel.AttendanceHistoryViewModel
 import com.school.app.viewmodel.AttendanceMarkViewModel
 import com.school.app.viewmodel.UiState
@@ -68,7 +70,7 @@ fun AttendanceMarkScreen(
     }
 
     Scaffold(
-        topBar = { AppTopBar("Mark Attendance", onBack) },
+        topBar = { AppTopBar(stringRes(R.string.attendance_mark_title), onBack) },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             if (roster is AttendanceMarkViewModel.Roster.Ready) {
@@ -79,7 +81,7 @@ fun AttendanceMarkScreen(
                         .fillMaxWidth()
                         .padding(16.dp),
                 ) {
-                    Text(if (viewModel.submitting) "Saving…" else "Save attendance")
+                    Text(stringRes(if (viewModel.submitting) R.string.attendance_saving else R.string.attendance_save))
                 }
             }
         },
@@ -101,11 +103,11 @@ fun AttendanceMarkScreen(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            "$pendingCount queued offline",
+                            stringRes(R.string.attendance_queued_offline, pendingCount),
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.weight(1f),
                         )
-                        Button(onClick = viewModel::syncNow) { Text("Sync") }
+                        Button(onClick = viewModel::syncNow) { Text(stringRes(R.string.attendance_sync)) }
                     }
                 }
             }
@@ -119,20 +121,20 @@ fun AttendanceMarkScreen(
                 OutlinedTextField(
                     value = viewModel.studentClass,
                     onValueChange = { viewModel.studentClass = it },
-                    label = { Text("Class") },
+                    label = { Text(stringRes(R.string.attendance_class)) },
                     singleLine = true,
                     modifier = Modifier.weight(1f),
                 )
                 OutlinedTextField(
                     value = viewModel.section,
                     onValueChange = { viewModel.section = it },
-                    label = { Text("Section") },
+                    label = { Text(stringRes(R.string.attendance_section)) },
                     singleLine = true,
                     modifier = Modifier.weight(1f),
                 )
             }
             DatePickerField(
-                label = "Date",
+                label = stringRes(R.string.attendance_date),
                 date = viewModel.date,
                 onDateChange = { viewModel.date = it },
                 modifier = Modifier
@@ -144,7 +146,7 @@ fun AttendanceMarkScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 12.dp),
-            ) { Text("Load students") }
+            ) { Text(stringRes(R.string.attendance_load_students)) }
 
             when (roster) {
                 AttendanceMarkViewModel.Roster.Idle -> {}
@@ -153,7 +155,7 @@ fun AttendanceMarkScreen(
                 is AttendanceMarkViewModel.Roster.Ready -> {
                     if (roster.alreadyMarked) {
                         Text(
-                            "Attendance already exists for this date — saved marks are pre-selected.",
+                            stringRes(R.string.attendance_already_marked),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(bottom = 8.dp),
@@ -199,9 +201,9 @@ fun AttendanceHistoryScreen(
     viewModel: AttendanceHistoryViewModel = hiltViewModel(),
 ) {
     val title = if (viewModel.studentName.isNotBlank()) {
-        "Attendance · ${viewModel.studentName}"
+        stringRes(R.string.attendance_history_title_named, viewModel.studentName)
     } else {
-        "Attendance"
+        stringRes(R.string.attendance_history_title)
     }
     Scaffold(topBar = { AppTopBar(title, onBack) }) { padding ->
         Box(Modifier.padding(padding)) {
@@ -211,7 +213,7 @@ fun AttendanceHistoryScreen(
                 is UiState.Ready -> Column {
                     CacheBanner(state.fromCache)
                     if (state.data.isEmpty()) {
-                        EmptyState("No attendance records yet")
+                        EmptyState(stringRes(R.string.attendance_none))
                     } else {
                         val records = state.data.sortedByDescending { it.date }
                         LazyColumn(
@@ -222,7 +224,7 @@ fun AttendanceHistoryScreen(
                                 Card(Modifier.fillMaxWidth()) {
                                     Column(Modifier.padding(16.dp)) {
                                         Text(
-                                            "${attendancePercentage(records)}% attendance",
+                                            stringRes(R.string.attendance_percent, attendancePercentage(records)),
                                             style = MaterialTheme.typography.headlineSmall,
                                             fontWeight = FontWeight.Bold,
                                             color = MaterialTheme.colorScheme.primary,

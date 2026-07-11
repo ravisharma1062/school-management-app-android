@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.BeachAccess
 import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.material.icons.filled.ChecklistRtl
 import androidx.compose.material.icons.filled.EscalatorWarning
+import androidx.compose.material.icons.automirrored.filled.LibraryBooks
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.automirrored.filled.Chat
@@ -50,41 +51,46 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.school.app.R
 import com.school.app.data.auth.Session
 import com.school.app.domain.model.LanguageCode
 import com.school.app.domain.model.Role
 import com.school.app.ui.common.AppTopBar
-import com.school.app.ui.common.t
+import com.school.app.ui.common.roleLabel
+import com.school.app.ui.common.stringRes
 import com.school.app.ui.navigation.Routes
 import com.school.app.viewmodel.HomeViewModel
 
-private data class Feature(val titleKey: String, val icon: ImageVector, val route: String)
+private data class Feature(@androidx.annotation.StringRes val titleRes: Int, val icon: ImageVector, val route: String)
 
 private fun featuresFor(role: Role): List<Feature> = when (role) {
     Role.TEACHER -> listOf(
-        Feature("feature.markAttendance", Icons.Default.ChecklistRtl, Routes.ATTENDANCE_MARK),
-        Feature("feature.students", Icons.Default.Groups, Routes.STUDENTS),
-        Feature("feature.timetable", Icons.Default.Schedule, Routes.timetable()),
-        Feature("feature.homework", Icons.AutoMirrored.Filled.MenuBook, Routes.homework()),
-        Feature("feature.notices", Icons.Default.Campaign, Routes.NOTICES),
-        Feature("feature.leaveRequests", Icons.Default.BeachAccess, Routes.LEAVE_REQUESTS),
-        Feature("feature.events", Icons.Default.Celebration, Routes.EVENTS),
-        Feature("feature.messages", Icons.AutoMirrored.Filled.Chat, Routes.MESSAGES),
+        Feature(R.string.feature_mark_attendance, Icons.Default.ChecklistRtl, Routes.ATTENDANCE_MARK),
+        Feature(R.string.feature_students, Icons.Default.Groups, Routes.STUDENTS),
+        Feature(R.string.feature_timetable, Icons.Default.Schedule, Routes.timetable()),
+        Feature(R.string.feature_homework, Icons.AutoMirrored.Filled.MenuBook, Routes.homework()),
+        Feature(R.string.feature_notices, Icons.Default.Campaign, Routes.NOTICES),
+        Feature(R.string.feature_leave_requests, Icons.Default.BeachAccess, Routes.LEAVE_REQUESTS),
+        Feature(R.string.feature_events, Icons.Default.Celebration, Routes.EVENTS),
+        Feature(R.string.feature_messages, Icons.AutoMirrored.Filled.Chat, Routes.MESSAGES),
+        Feature(R.string.action_library, Icons.AutoMirrored.Filled.LibraryBooks, Routes.LIBRARY_CATALOG),
     )
     Role.PARENT -> listOf(
-        Feature("feature.myChildren", Icons.Default.EscalatorWarning, Routes.CHILDREN),
-        Feature("feature.notices", Icons.Default.Campaign, Routes.NOTICES),
-        Feature("feature.leaveRequests", Icons.Default.BeachAccess, Routes.LEAVE_REQUESTS),
-        Feature("feature.events", Icons.Default.Celebration, Routes.EVENTS),
-        Feature("feature.messages", Icons.AutoMirrored.Filled.Chat, Routes.MESSAGES),
+        Feature(R.string.feature_my_children, Icons.Default.EscalatorWarning, Routes.CHILDREN),
+        Feature(R.string.feature_notices, Icons.Default.Campaign, Routes.NOTICES),
+        Feature(R.string.feature_leave_requests, Icons.Default.BeachAccess, Routes.LEAVE_REQUESTS),
+        Feature(R.string.feature_events, Icons.Default.Celebration, Routes.EVENTS),
+        Feature(R.string.feature_messages, Icons.AutoMirrored.Filled.Chat, Routes.MESSAGES),
+        Feature(R.string.action_library, Icons.AutoMirrored.Filled.LibraryBooks, Routes.LIBRARY_CATALOG),
     )
     Role.ADMIN -> listOf(
-        Feature("feature.students", Icons.Default.Groups, Routes.STUDENTS),
-        Feature("feature.timetable", Icons.Default.Schedule, Routes.timetable()),
-        Feature("feature.homework", Icons.AutoMirrored.Filled.MenuBook, Routes.homework()),
-        Feature("feature.notices", Icons.Default.Campaign, Routes.NOTICES),
-        Feature("feature.leaveRequests", Icons.Default.BeachAccess, Routes.LEAVE_REQUESTS),
-        Feature("feature.events", Icons.Default.Celebration, Routes.EVENTS),
+        Feature(R.string.feature_students, Icons.Default.Groups, Routes.STUDENTS),
+        Feature(R.string.feature_timetable, Icons.Default.Schedule, Routes.timetable()),
+        Feature(R.string.feature_homework, Icons.AutoMirrored.Filled.MenuBook, Routes.homework()),
+        Feature(R.string.feature_notices, Icons.Default.Campaign, Routes.NOTICES),
+        Feature(R.string.feature_leave_requests, Icons.Default.BeachAccess, Routes.LEAVE_REQUESTS),
+        Feature(R.string.feature_events, Icons.Default.Celebration, Routes.EVENTS),
+        Feature(R.string.action_library, Icons.AutoMirrored.Filled.LibraryBooks, Routes.LIBRARY_CATALOG),
     )
 }
 
@@ -102,10 +108,10 @@ fun HomeScreen(
 
     Scaffold(
         topBar = {
-            AppTopBar(title = t(lang, "app.title")) {
+            AppTopBar(title = stringRes(R.string.home_app_title)) {
                 LanguageSwitcher(current = lang, onChange = viewModel::setLanguage)
                 IconButton(onClick = onLogout) {
-                    Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = t(lang, "common.logOut"))
+                    Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = stringRes(R.string.home_log_out))
                 }
             }
         },
@@ -117,12 +123,12 @@ fun HomeScreen(
                 .padding(16.dp),
         ) {
             Text(
-                t(lang, "home.hello", session.userName ?: session.userEmail ?: "there"),
+                stringRes(R.string.home_hello, session.userName ?: session.userEmail ?: "there"),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold,
             )
             Text(
-                t(lang, "role.${session.role.name}"),
+                roleLabel(session.role.name),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -141,11 +147,11 @@ fun HomeScreen(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            t(lang, "common.pendingSync", pendingCount, if (pendingCount == 1) "" else "s"),
+                            stringRes(R.string.home_pending_sync, pendingCount),
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.weight(1f),
                         )
-                        Button(onClick = viewModel::syncNow) { Text(t(lang, "common.syncNow")) }
+                        Button(onClick = viewModel::syncNow) { Text(stringRes(R.string.home_sync_now)) }
                     }
                 }
             }
@@ -171,7 +177,7 @@ fun HomeScreen(
                                 modifier = Modifier.size(32.dp),
                             )
                             Text(
-                                t(lang, feature.titleKey),
+                                stringRes(feature.titleRes),
                                 style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier.padding(top = 12.dp),
                             )
