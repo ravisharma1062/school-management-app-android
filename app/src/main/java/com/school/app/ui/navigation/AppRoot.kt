@@ -11,15 +11,21 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.school.app.data.auth.Session
+import com.school.app.domain.model.Role
 import com.school.app.ui.attendance.AttendanceHistoryScreen
 import com.school.app.ui.attendance.AttendanceMarkScreen
 import com.school.app.ui.auth.LoginScreen
 import com.school.app.ui.common.CenteredLoading
+import com.school.app.ui.event.EventCreateScreen
+import com.school.app.ui.event.EventsListScreen
 import com.school.app.ui.examresult.ExamResultsScreen
 import com.school.app.ui.fees.FeesScreen
 import com.school.app.ui.home.HomeScreen
 import com.school.app.ui.homework.HomeworkCreateScreen
 import com.school.app.ui.homework.HomeworkListScreen
+import com.school.app.ui.leaverequest.LeaveRequestsScreen
+import com.school.app.ui.messaging.ConversationThreadScreen
+import com.school.app.ui.messaging.MessagesListScreen
 import com.school.app.ui.notices.NoticesScreen
 import com.school.app.ui.students.ChildrenScreen
 import com.school.app.ui.students.StudentDetailScreen
@@ -41,6 +47,11 @@ object Routes {
     const val RESULTS = "results/{studentId}?name={name}"
     const val FEES = "fees/{studentId}?name={name}"
     const val NOTICES = "notices"
+    const val LEAVE_REQUESTS = "leave-requests"
+    const val MESSAGES = "messages"
+    const val CONVERSATION_THREAD = "conversations/{conversationId}?otherName={otherName}"
+    const val EVENTS = "events"
+    const val EVENT_CREATE = "events/create"
 
     fun studentDetail(id: String) = "student/$id"
     fun attendanceHistory(id: String, name: String) =
@@ -53,6 +64,8 @@ object Routes {
         "homework/create?cls=${Uri.encode(cls)}&sec=${Uri.encode(sec)}"
     fun results(id: String, name: String) = "results/$id?name=${Uri.encode(name)}"
     fun fees(id: String, name: String) = "fees/$id?name=${Uri.encode(name)}"
+    fun conversationThread(id: String, otherName: String) =
+        "conversations/$id?otherName=${Uri.encode(otherName)}"
 }
 
 @Composable
@@ -143,10 +156,44 @@ private fun MainNavHost(session: Session, onLogout: () -> Unit) {
             Routes.FEES,
             arguments = listOf(optionalString("name")),
         ) {
-            FeesScreen(onBack = { navController.popBackStack() })
+            FeesScreen(role = role, onBack = { navController.popBackStack() })
         }
         composable(Routes.NOTICES) {
             NoticesScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Routes.LEAVE_REQUESTS) {
+            LeaveRequestsScreen(role = role, onBack = { navController.popBackStack() })
+        }
+        composable(Routes.MESSAGES) {
+            MessagesListScreen(
+                role = role,
+                onBack = { navController.popBackStack() },
+                onOpenConversation = { conversation ->
+                    val otherName = if (role == Role.TEACHER) conversation.parentName else conversation.teacherName
+                    navController.navigate(Routes.conversationThread(conversation.id, otherName))
+                },
+            )
+        }
+        composable(
+            Routes.CONVERSATION_THREAD,
+            arguments = listOf(optionalString("otherName")),
+        ) { backStackEntry ->
+            val otherName = backStackEntry.arguments?.getString("otherName")?.ifBlank { null } ?: "Conversation"
+            ConversationThreadScreen(
+                title = otherName,
+                currentUserId = session.userId,
+                onBack = { navController.popBackStack() },
+            )
+        }
+        composable(Routes.EVENTS) {
+            EventsListScreen(
+                role = role,
+                onBack = { navController.popBackStack() },
+                onCreate = { navController.navigate(Routes.EVENT_CREATE) },
+            )
+        }
+        composable(Routes.EVENT_CREATE) {
+            EventCreateScreen(onDone = { navController.popBackStack() })
         }
     }
 }

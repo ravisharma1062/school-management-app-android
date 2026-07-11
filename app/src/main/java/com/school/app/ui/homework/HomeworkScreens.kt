@@ -1,5 +1,6 @@
 package com.school.app.ui.homework
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -20,21 +22,35 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import com.school.app.BuildConfig
 import com.school.app.domain.model.Homework
+import com.school.app.domain.model.HomeworkSubmission
+import com.school.app.domain.model.HomeworkSubmissionStatus
 import com.school.app.domain.model.Role
+import com.school.app.domain.model.Student
 import com.school.app.ui.common.AppTopBar
 import com.school.app.ui.common.CacheBanner
 import com.school.app.ui.common.CenteredLoading
@@ -54,11 +70,29 @@ fun HomeworkListScreen(
     viewModel: HomeworkListViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state
+    val context = LocalContext.current
 
     // Refresh when returning from the create screen so new homework shows up.
     LifecycleResumeEffect(Unit) {
         if (viewModel.state.loadedFor != null) viewModel.refresh()
         onPauseOrDispose { }
+    }
+
+    LaunchedEffect(state.loadedFor, role) {
+        if (role == Role.PARENT && state.loadedFor != null) {
+            viewModel.loadMyChildrenForCurrentClass()
+        }
+    }
+
+    LaunchedEffect(viewModel.downloadedFile) {
+        val file = viewModel.downloadedFile ?: return@LaunchedEffect
+        val uri = FileProvider.getUriForFile(context, "${BuildConfig.APPLICATION_ID}.fileprovider", file)
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, context.contentResolver.getType(uri) ?: "*/*")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        context.startActivity(Intent.createChooser(intent, "Open submission"))
+        viewModel.consumeDownloadedFile()
     }
 
     Scaffold(
@@ -116,7 +150,9 @@ fun HomeworkListScreen(
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    items(state.items, key = { it.id }) { HomeworkCard(it) }
+                    items(state.items, key = { it.id }) { hw ->
+                        HomeworkCard(hw, role = role, viewModel = viewModel)
+                    }
                     if (!state.endReached) {
                         item {
                             LaunchedEffect(state.items.size) { viewModel.loadNext() }
@@ -135,7 +171,7 @@ fun HomeworkListScreen(
 }
 
 @Composable
-private fun HomeworkCard(homework: Homework) {
+private fun HomeworkCard(homework: Homework, role: Role, viewModel: HomeworkListViewModel) {
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -161,8 +197,137 @@ private fun HomeworkCard(homework: Homework) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 8.dp),
             )
+
+            if (role == Role.PARENT) {
+                ParentSubmissionSection(homework, viewModel)
+            } else if (role == Role.TEACHER) {
+                TeacherSubmissionsSection(homework, viewModel)
+            }
         }
     }
+}
+
+@Composable
+private fun ParentSubmissionSection(homework: Homework, viewModel: HomeworkListViewModel) {
+    if (viewModel.myChildrenInLoadedClass.isEmpty()) return
+
+    HorizontalDivider(Modifier.padding(vertical = 8.dp))
+    viewModel.submitError?.let {
+        Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+    }
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        viewModel.myChildrenInLoadedClass.forEach { child ->
+            ChildSubmissionRow(homework, child, viewModel)
+        }
+    }
+}
+
+@Composable
+private fun ChildSubmissionRow(homework: Homework, child: Student, viewModel: HomeworkListViewModel) {
+    val submission = viewModel.submissionFor(homework.id, child.id)
+    val submitting = viewModel.submittingStudentId == child.id
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null) viewModel.submit(homework.id, child.id, uri)
+    }
+
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(child.name, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+        if (submission != null) {
+            StatusChip(submission.status.name, submission.status.chipColor())
+            TextButton(onClick = { viewModel.downloadSubmissionFile(submission) }) { Text("View") }
+        } else {
+            TextButton(onClick = { launcher.launch("*/*") }, enabled = !submitting) {
+                Text(if (submitting) "Uploading…" else "Submit")
+            }
+        }
+    }
+    submission?.grade?.let {
+        Text(
+            "Grade: $it",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun TeacherSubmissionsSection(homework: Homework, viewModel: HomeworkListViewModel) {
+    val expanded = viewModel.expandedHomeworkIds[homework.id] == true
+
+    HorizontalDivider(Modifier.padding(vertical = 8.dp))
+    TextButton(onClick = { viewModel.toggleExpanded(homework.id) }) {
+        Text(if (expanded) "Hide submissions" else "View submissions")
+    }
+
+    if (expanded) {
+        val submissions = viewModel.submissionsByHomeworkId[homework.id]
+        when {
+            submissions == null -> CircularProgressIndicator(Modifier.width(20.dp))
+            submissions.isEmpty() -> Text(
+                "No submissions yet",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            else -> Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                submissions.forEach { submission ->
+                    SubmissionGradingRow(homework.id, submission, viewModel)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SubmissionGradingRow(homeworkId: String, submission: HomeworkSubmission, viewModel: HomeworkListViewModel) {
+    var grading by remember(submission.id) { mutableStateOf(false) }
+    var grade by remember(submission.id) { mutableStateOf(submission.grade ?: "") }
+    var feedback by remember(submission.id) { mutableStateOf(submission.teacherFeedback ?: "") }
+
+    Column(Modifier.fillMaxWidth()) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(submission.fileName, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+            StatusChip(submission.status.name, submission.status.chipColor())
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            TextButton(onClick = { viewModel.downloadSubmissionFile(submission) }) { Text("View file") }
+            TextButton(onClick = { grading = !grading }) {
+                Text(if (submission.status == HomeworkSubmissionStatus.GRADED) "Edit grade" else "Grade")
+            }
+        }
+        if (grading) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                OutlinedTextField(
+                    value = grade,
+                    onValueChange = { grade = it },
+                    label = { Text("Grade") },
+                    singleLine = true,
+                    modifier = Modifier.width(100.dp),
+                )
+                Spacer(Modifier.width(8.dp))
+                Button(onClick = {
+                    viewModel.grade(submission.id, homeworkId, grade, feedback.ifBlank { null })
+                    grading = false
+                }) { Text("Save") }
+            }
+            OutlinedTextField(
+                value = feedback,
+                onValueChange = { feedback = it },
+                label = { Text("Feedback (optional)") },
+                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+            )
+        } else if (submission.grade != null) {
+            Text(
+                "Grade: ${submission.grade}" + (submission.teacherFeedback?.let { " — $it" } ?: ""),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+private fun HomeworkSubmissionStatus.chipColor() = when (this) {
+    HomeworkSubmissionStatus.SUBMITTED -> androidx.compose.ui.graphics.Color(0xFF0284C7)
+    HomeworkSubmissionStatus.GRADED -> androidx.compose.ui.graphics.Color(0xFF16A34A)
 }
 
 @Composable

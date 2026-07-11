@@ -7,14 +7,19 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.school.app.data.Outcome
+import com.school.app.data.payment.PaymentOutcome
+import com.school.app.data.payment.RazorpayResultBus
 import com.school.app.data.repository.ExamResultRepository
 import com.school.app.data.repository.FeeRepository
 import com.school.app.data.repository.NoticeRepository
+import com.school.app.data.repository.PaymentRepository
 import com.school.app.domain.model.ExamResult
 import com.school.app.domain.model.Fee
 import com.school.app.domain.model.Notice
+import com.school.app.domain.model.PaymentInitiateResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,6 +34,13 @@ class ExamResultsViewModel @Inject constructor(
     var state by mutableStateOf<UiState<List<ExamResult>>>(UiState.Loading)
         private set
 
+    var downloading by mutableStateOf(false)
+        private set
+    var downloadError by mutableStateOf<String?>(null)
+        private set
+    var downloadedFile by mutableStateOf<File?>(null)
+        private set
+
     init {
         load()
     }
@@ -39,12 +51,38 @@ class ExamResultsViewModel @Inject constructor(
             state = examResultRepository.forStudent(studentId).toUiState()
         }
     }
+
+    fun downloadReportCard() {
+        if (downloading) return
+        downloading = true
+        downloadError = null
+        viewModelScope.launch {
+            when (val result = examResultRepository.downloadReportCard(studentId)) {
+                is Outcome.Success -> downloadedFile = result.data
+                is Outcome.Failure -> downloadError = result.message
+            }
+            downloading = false
+        }
+    }
+
+    fun consumeDownloadedFile() {
+        downloadedFile = null
+    }
+}
+
+sealed interface PaymentUiState {
+    data object Idle : PaymentUiState
+    data class Initiating(val feeId: String) : PaymentUiState
+    data class ReadyToOpen(val feeId: String, val order: PaymentInitiateResponse) : PaymentUiState
+    data object Success : PaymentUiState
+    data class Error(val message: String) : PaymentUiState
 }
 
 @HiltViewModel
 class FeesViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val feeRepository: FeeRepository,
+    private val paymentRepository: PaymentRepository,
 ) : ViewModel() {
 
     private val studentId: String = checkNotNull(savedStateHandle["studentId"])
@@ -53,8 +91,19 @@ class FeesViewModel @Inject constructor(
     var state by mutableStateOf<UiState<List<Fee>>>(UiState.Loading)
         private set
 
+    var paymentState by mutableStateOf<PaymentUiState>(PaymentUiState.Idle)
+        private set
+
     init {
         load()
+        viewModelScope.launch {
+            RazorpayResultBus.events.collect { outcome ->
+                paymentState = when (outcome) {
+                    is PaymentOutcome.Success -> PaymentUiState.Success.also { load() }
+                    is PaymentOutcome.Error -> PaymentUiState.Error(outcome.message)
+                }
+            }
+        }
     }
 
     fun load() {
@@ -62,6 +111,25 @@ class FeesViewModel @Inject constructor(
         viewModelScope.launch {
             state = feeRepository.forStudent(studentId).toUiState()
         }
+    }
+
+    fun payFee(feeId: String) {
+        paymentState = PaymentUiState.Initiating(feeId)
+        viewModelScope.launch {
+            paymentState = when (val result = paymentRepository.initiate(feeId)) {
+                is Outcome.Success -> PaymentUiState.ReadyToOpen(feeId, result.data)
+                is Outcome.Failure -> PaymentUiState.Error(result.message)
+            }
+        }
+    }
+
+    /** Called once the checkout sheet has actually been launched, so we don't reopen it on recomposition. */
+    fun onCheckoutOpened() {
+        paymentState = PaymentUiState.Idle
+    }
+
+    fun dismissPaymentMessage() {
+        paymentState = PaymentUiState.Idle
     }
 }
 

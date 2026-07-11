@@ -18,6 +18,7 @@ data class Session(
     val accessToken: String,
     val refreshToken: String,
     val role: Role,
+    val userId: String?,
     val userName: String?,
     val userEmail: String?,
 )
@@ -36,6 +37,7 @@ class TokenManager @Inject constructor(
         val ACCESS = stringPreferencesKey("access_token")
         val REFRESH = stringPreferencesKey("refresh_token")
         val ROLE = stringPreferencesKey("role")
+        val ID = stringPreferencesKey("user_id")
         val NAME = stringPreferencesKey("user_name")
         val EMAIL = stringPreferencesKey("user_email")
     }
@@ -53,7 +55,7 @@ class TokenManager @Inject constructor(
         val refresh = prefs[Keys.REFRESH] ?: return@map null
         val role = prefs[Keys.ROLE]?.let { runCatching { Role.valueOf(it) }.getOrNull() }
             ?: return@map null
-        Session(access, refresh, role, prefs[Keys.NAME], prefs[Keys.EMAIL])
+        Session(access, refresh, role, prefs[Keys.ID], prefs[Keys.NAME], prefs[Keys.EMAIL])
     }
 
     /** Loads persisted tokens into memory; called once at app start. */
@@ -75,6 +77,7 @@ class TokenManager @Inject constructor(
 
     suspend fun saveUser(user: User) {
         context.sessionDataStore.edit { prefs ->
+            prefs[Keys.ID] = user.id
             prefs[Keys.NAME] = user.name
             prefs[Keys.EMAIL] = user.email
         }

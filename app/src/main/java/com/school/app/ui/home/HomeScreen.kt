@@ -21,11 +21,14 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.filled.BeachAccess
 import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.material.icons.filled.ChecklistRtl
 import androidx.compose.material.icons.filled.EscalatorWarning
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.automirrored.filled.Chat
+import androidx.compose.material.icons.filled.Celebration
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -61,16 +64,24 @@ private fun featuresFor(role: Role): List<Feature> = when (role) {
         Feature("Timetable", Icons.Default.Schedule, Routes.timetable()),
         Feature("Homework", Icons.AutoMirrored.Filled.MenuBook, Routes.homework()),
         Feature("Notices", Icons.Default.Campaign, Routes.NOTICES),
+        Feature("Leave Requests", Icons.Default.BeachAccess, Routes.LEAVE_REQUESTS),
+        Feature("Events", Icons.Default.Celebration, Routes.EVENTS),
+        Feature("Messages", Icons.AutoMirrored.Filled.Chat, Routes.MESSAGES),
     )
     Role.PARENT -> listOf(
         Feature("My Children", Icons.Default.EscalatorWarning, Routes.CHILDREN),
         Feature("Notices", Icons.Default.Campaign, Routes.NOTICES),
+        Feature("Leave Requests", Icons.Default.BeachAccess, Routes.LEAVE_REQUESTS),
+        Feature("Events", Icons.Default.Celebration, Routes.EVENTS),
+        Feature("Messages", Icons.AutoMirrored.Filled.Chat, Routes.MESSAGES),
     )
     Role.ADMIN -> listOf(
         Feature("Students", Icons.Default.Groups, Routes.STUDENTS),
         Feature("Timetable", Icons.Default.Schedule, Routes.timetable()),
         Feature("Homework", Icons.AutoMirrored.Filled.MenuBook, Routes.homework()),
         Feature("Notices", Icons.Default.Campaign, Routes.NOTICES),
+        Feature("Leave Requests", Icons.Default.BeachAccess, Routes.LEAVE_REQUESTS),
+        Feature("Events", Icons.Default.Celebration, Routes.EVENTS),
     )
 }
 
