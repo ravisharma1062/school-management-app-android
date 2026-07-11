@@ -235,6 +235,31 @@ data class EventRsvpDto(
 
 data class EventRsvpRequest(val status: RsvpStatus)
 
+// --- Transport ---
+data class BusStop(
+    val id: String,
+    val name: String,
+    val stopOrder: Int,
+    val latitude: Double,
+    val longitude: Double,
+)
+
+data class BusLocation(
+    val latitude: Double? = null,
+    val longitude: Double? = null,
+    val updatedAt: String? = null,
+)
+
+data class StudentTransport(
+    val studentId: String,
+    val routeId: String,
+    val routeName: String,
+    val stopId: String,
+    val stopName: String,
+    val stopLatitude: Double,
+    val stopLongitude: Double,
+)
+
 // --- Spring Data Page<T> (subset the app uses) ---
 data class PageResponse<T>(
     val content: List<T> = emptyList(),

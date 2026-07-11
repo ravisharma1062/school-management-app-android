@@ -90,6 +90,7 @@ dependencies {
     implementation(libs.firebase.messaging)
 
     implementation(libs.razorpay.checkout)
+    implementation(libs.osmdroid.android)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

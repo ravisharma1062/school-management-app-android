@@ -17,6 +17,7 @@ coroutines = "1.9.0"
 firebaseBom = "33.5.1"
 googleServices = "4.4.2"
 razorpay = "1.6.33"
+osmdroid = "6.1.20"
 junit = "4.13.2"
 androidxJunit = "1.2.1"
 espressoCore = "3.6.1"
@@ -52,6 +53,7 @@ kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
 razorpay-checkout = { group = "com.razorpay", name = "checkout", version.ref = "razorpay" }
+osmdroid-android = { group = "org.osmdroid", name = "osmdroid-android", version.ref = "osmdroid" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxJunit" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

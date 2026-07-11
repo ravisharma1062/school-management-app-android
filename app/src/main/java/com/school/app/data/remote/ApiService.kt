@@ -3,6 +3,7 @@ package com.school.app.data.remote
 import com.school.app.domain.model.Attendance
 import com.school.app.domain.model.AttendanceMarkRequest
 import com.school.app.domain.model.AuthResponse
+import com.school.app.domain.model.BusLocation
 import com.school.app.domain.model.Conversation
 import com.school.app.domain.model.ConversationContact
 import com.school.app.domain.model.ConversationCreateRequest
@@ -28,6 +29,7 @@ import com.school.app.domain.model.PaymentInitiateResponse
 import com.school.app.domain.model.RefreshRequest
 import com.school.app.domain.model.SchoolEvent
 import com.school.app.domain.model.Student
+import com.school.app.domain.model.StudentTransport
 import com.school.app.domain.model.TimetableEntry
 import com.school.app.domain.model.User
 import okhttp3.MultipartBody
@@ -194,6 +196,13 @@ interface ApiService {
 
     @GET("events/{id}/rsvps")
     suspend fun eventRsvps(@Path("id") id: String): List<EventRsvpDto>
+
+    // --- Transport ---
+    @GET("transport/students/{studentId}")
+    suspend fun studentTransport(@Path("studentId") studentId: String): StudentTransport
+
+    @GET("transport/routes/{id}/location/latest")
+    suspend fun busLocation(@Path("id") routeId: String): BusLocation
 }
 
 /**

@@ -31,6 +31,7 @@ import com.school.app.ui.students.ChildrenScreen
 import com.school.app.ui.students.StudentDetailScreen
 import com.school.app.ui.students.StudentsScreen
 import com.school.app.ui.timetable.TimetableScreen
+import com.school.app.ui.transport.TransportScreen
 import com.school.app.viewmodel.MainViewModel
 import com.school.app.viewmodel.SessionUi
 
@@ -52,6 +53,7 @@ object Routes {
     const val CONVERSATION_THREAD = "conversations/{conversationId}?otherName={otherName}"
     const val EVENTS = "events"
     const val EVENT_CREATE = "events/create"
+    const val TRANSPORT = "transport/{studentId}?name={name}"
 
     fun studentDetail(id: String) = "student/$id"
     fun attendanceHistory(id: String, name: String) =
@@ -66,6 +68,7 @@ object Routes {
     fun fees(id: String, name: String) = "fees/$id?name=${Uri.encode(name)}"
     fun conversationThread(id: String, otherName: String) =
         "conversations/$id?otherName=${Uri.encode(otherName)}"
+    fun transport(id: String, name: String) = "transport/$id?name=${Uri.encode(name)}"
 }
 
 @Composable
@@ -194,6 +197,12 @@ private fun MainNavHost(session: Session, onLogout: () -> Unit) {
         }
         composable(Routes.EVENT_CREATE) {
             EventCreateScreen(onDone = { navController.popBackStack() })
+        }
+        composable(
+            Routes.TRANSPORT,
+            arguments = listOf(optionalString("name")),
+        ) {
+            TransportScreen(onBack = { navController.popBackStack() })
         }
     }
 }
