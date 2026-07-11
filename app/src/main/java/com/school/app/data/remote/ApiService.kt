@@ -3,6 +3,7 @@ package com.school.app.data.remote
 import com.school.app.domain.model.Attendance
 import com.school.app.domain.model.AttendanceMarkRequest
 import com.school.app.domain.model.AuthResponse
+import com.school.app.domain.model.BookIssue
 import com.school.app.domain.model.BusLocation
 import com.school.app.domain.model.Conversation
 import com.school.app.domain.model.ConversationContact
@@ -203,6 +204,10 @@ interface ApiService {
 
     @GET("transport/routes/{id}/location/latest")
     suspend fun busLocation(@Path("id") routeId: String): BusLocation
+
+    // --- Library ---
+    @GET("library/students/{studentId}/issues")
+    suspend fun libraryIssuesForStudent(@Path("studentId") studentId: String): List<BookIssue>
 }
 
 /**

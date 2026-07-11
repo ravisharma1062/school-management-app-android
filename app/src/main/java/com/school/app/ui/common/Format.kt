@@ -2,6 +2,7 @@ package com.school.app.ui.common
 
 import androidx.compose.ui.graphics.Color
 import com.school.app.domain.model.AttendanceStatus
+import com.school.app.domain.model.BookIssueStatus
 import com.school.app.domain.model.FeeStatus
 import com.school.app.domain.model.LeaveStatus
 import java.time.LocalDate
@@ -48,4 +49,9 @@ fun LeaveStatus.color(): Color = when (this) {
     LeaveStatus.APPROVED -> Color(0xFF15803D)
     LeaveStatus.REJECTED -> Color(0xFFB91C1C)
     LeaveStatus.PENDING -> Color(0xFFB45309)
+}
+
+fun BookIssueStatus.color(): Color = when (this) {
+    BookIssueStatus.ISSUED -> Color(0xFF1D4ED8)
+    BookIssueStatus.RETURNED -> Color(0xFF15803D)
 }

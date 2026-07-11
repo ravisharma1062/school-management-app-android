@@ -17,6 +17,7 @@ import androidx.compose.material.icons.automirrored.filled.ReceiptLong
 import androidx.compose.material.icons.filled.ChecklistRtl
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.DirectionsBus
+import androidx.compose.material.icons.filled.LibraryBooks
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.Button
@@ -249,6 +250,10 @@ private fun StudentDetailContent(
                     HorizontalDivider()
                     ActionRow(Icons.Default.DirectionsBus, "Bus tracking") {
                         onNavigate(Routes.transport(student.id, student.name))
+                    }
+                    HorizontalDivider()
+                    ActionRow(Icons.Default.LibraryBooks, "Library") {
+                        onNavigate(Routes.library(student.id, student.name))
                     }
                 }
             }

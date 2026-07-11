@@ -260,6 +260,22 @@ data class StudentTransport(
     val stopLongitude: Double,
 )
 
+// --- Library ---
+enum class BookIssueStatus { ISSUED, RETURNED }
+
+data class BookIssue(
+    val id: String,
+    val bookId: String,
+    val bookTitle: String,
+    val studentId: String,
+    val studentName: String,
+    val issuedAt: String,
+    val dueDate: String,
+    val returnedAt: String? = null,
+    val fineAmount: Double? = null,
+    val status: BookIssueStatus,
+)
+
 // --- Spring Data Page<T> (subset the app uses) ---
 data class PageResponse<T>(
     val content: List<T> = emptyList(),

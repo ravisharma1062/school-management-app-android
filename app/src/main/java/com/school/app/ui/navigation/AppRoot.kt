@@ -24,6 +24,7 @@ import com.school.app.ui.home.HomeScreen
 import com.school.app.ui.homework.HomeworkCreateScreen
 import com.school.app.ui.homework.HomeworkListScreen
 import com.school.app.ui.leaverequest.LeaveRequestsScreen
+import com.school.app.ui.library.LibraryScreen
 import com.school.app.ui.messaging.ConversationThreadScreen
 import com.school.app.ui.messaging.MessagesListScreen
 import com.school.app.ui.notices.NoticesScreen
@@ -54,6 +55,7 @@ object Routes {
     const val EVENTS = "events"
     const val EVENT_CREATE = "events/create"
     const val TRANSPORT = "transport/{studentId}?name={name}"
+    const val LIBRARY = "library/{studentId}?name={name}"
 
     fun studentDetail(id: String) = "student/$id"
     fun attendanceHistory(id: String, name: String) =
@@ -69,6 +71,7 @@ object Routes {
     fun conversationThread(id: String, otherName: String) =
         "conversations/$id?otherName=${Uri.encode(otherName)}"
     fun transport(id: String, name: String) = "transport/$id?name=${Uri.encode(name)}"
+    fun library(id: String, name: String) = "library/$id?name=${Uri.encode(name)}"
 }
 
 @Composable
@@ -203,6 +206,12 @@ private fun MainNavHost(session: Session, onLogout: () -> Unit) {
             arguments = listOf(optionalString("name")),
         ) {
             TransportScreen(onBack = { navController.popBackStack() })
+        }
+        composable(
+            Routes.LIBRARY,
+            arguments = listOf(optionalString("name")),
+        ) {
+            LibraryScreen(onBack = { navController.popBackStack() })
         }
     }
 }
