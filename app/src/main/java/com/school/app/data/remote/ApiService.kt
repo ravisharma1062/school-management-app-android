@@ -33,6 +33,7 @@ import com.school.app.domain.model.RefreshRequest
 import com.school.app.domain.model.SchoolEvent
 import com.school.app.domain.model.Student
 import com.school.app.domain.model.StudentTransport
+import com.school.app.domain.model.SubscriptionDto
 import com.school.app.domain.model.TimetableEntry
 import com.school.app.domain.model.User
 import okhttp3.MultipartBody
@@ -220,6 +221,10 @@ interface ApiService {
         @Query("size") size: Int,
         @Query("search") search: String? = null,
     ): PageResponse<Book>
+
+    // --- Subscription (ADMIN only, per the backend contract) ---
+    @GET("subscription")
+    suspend fun subscription(): SubscriptionDto
 }
 
 /**

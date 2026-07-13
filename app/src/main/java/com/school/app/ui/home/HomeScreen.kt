@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.filled.Celebration
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -53,6 +54,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.school.app.R
 import com.school.app.data.auth.Session
+import com.school.app.domain.model.FeatureKey
 import com.school.app.domain.model.LanguageCode
 import com.school.app.domain.model.Role
 import com.school.app.ui.common.AppTopBar
@@ -61,37 +63,51 @@ import com.school.app.ui.common.stringRes
 import com.school.app.ui.navigation.Routes
 import com.school.app.viewmodel.HomeViewModel
 
-private data class Feature(@androidx.annotation.StringRes val titleRes: Int, val icon: ImageVector, val route: String)
+private data class Feature(
+    @androidx.annotation.StringRes val titleRes: Int,
+    val icon: ImageVector,
+    val route: String,
+    /** Hidden when non-null and not present in the caller's entitled-feature set. */
+    val featureKey: FeatureKey? = null,
+)
 
-private fun featuresFor(role: Role): List<Feature> = when (role) {
-    Role.TEACHER -> listOf(
-        Feature(R.string.feature_mark_attendance, Icons.Default.ChecklistRtl, Routes.ATTENDANCE_MARK),
-        Feature(R.string.feature_students, Icons.Default.Groups, Routes.STUDENTS),
-        Feature(R.string.feature_timetable, Icons.Default.Schedule, Routes.timetable()),
-        Feature(R.string.feature_homework, Icons.AutoMirrored.Filled.MenuBook, Routes.homework()),
-        Feature(R.string.feature_notices, Icons.Default.Campaign, Routes.NOTICES),
-        Feature(R.string.feature_leave_requests, Icons.Default.BeachAccess, Routes.LEAVE_REQUESTS),
-        Feature(R.string.feature_events, Icons.Default.Celebration, Routes.EVENTS),
-        Feature(R.string.feature_messages, Icons.AutoMirrored.Filled.Chat, Routes.MESSAGES),
-        Feature(R.string.action_library, Icons.AutoMirrored.Filled.LibraryBooks, Routes.LIBRARY_CATALOG),
-    )
-    Role.PARENT -> listOf(
-        Feature(R.string.feature_my_children, Icons.Default.EscalatorWarning, Routes.CHILDREN),
-        Feature(R.string.feature_notices, Icons.Default.Campaign, Routes.NOTICES),
-        Feature(R.string.feature_leave_requests, Icons.Default.BeachAccess, Routes.LEAVE_REQUESTS),
-        Feature(R.string.feature_events, Icons.Default.Celebration, Routes.EVENTS),
-        Feature(R.string.feature_messages, Icons.AutoMirrored.Filled.Chat, Routes.MESSAGES),
-        Feature(R.string.action_library, Icons.AutoMirrored.Filled.LibraryBooks, Routes.LIBRARY_CATALOG),
-    )
-    Role.ADMIN -> listOf(
-        Feature(R.string.feature_students, Icons.Default.Groups, Routes.STUDENTS),
-        Feature(R.string.feature_timetable, Icons.Default.Schedule, Routes.timetable()),
-        Feature(R.string.feature_homework, Icons.AutoMirrored.Filled.MenuBook, Routes.homework()),
-        Feature(R.string.feature_notices, Icons.Default.Campaign, Routes.NOTICES),
-        Feature(R.string.feature_leave_requests, Icons.Default.BeachAccess, Routes.LEAVE_REQUESTS),
-        Feature(R.string.feature_events, Icons.Default.Celebration, Routes.EVENTS),
-        Feature(R.string.action_library, Icons.AutoMirrored.Filled.LibraryBooks, Routes.LIBRARY_CATALOG),
-    )
+private fun featuresFor(role: Role, entitledFeatures: Set<FeatureKey>?): List<Feature> {
+    val all = when (role) {
+        Role.TEACHER -> listOf(
+            Feature(R.string.feature_mark_attendance, Icons.Default.ChecklistRtl, Routes.ATTENDANCE_MARK),
+            Feature(R.string.feature_students, Icons.Default.Groups, Routes.STUDENTS),
+            Feature(R.string.feature_timetable, Icons.Default.Schedule, Routes.timetable()),
+            Feature(R.string.feature_homework, Icons.AutoMirrored.Filled.MenuBook, Routes.homework()),
+            Feature(R.string.feature_notices, Icons.Default.Campaign, Routes.NOTICES),
+            Feature(R.string.feature_leave_requests, Icons.Default.BeachAccess, Routes.LEAVE_REQUESTS),
+            Feature(R.string.feature_events, Icons.Default.Celebration, Routes.EVENTS),
+            Feature(R.string.feature_messages, Icons.AutoMirrored.Filled.Chat, Routes.MESSAGES, FeatureKey.MESSAGING),
+            Feature(R.string.action_library, Icons.AutoMirrored.Filled.LibraryBooks, Routes.LIBRARY_CATALOG, FeatureKey.LIBRARY),
+        )
+        Role.PARENT -> listOf(
+            Feature(R.string.feature_my_children, Icons.Default.EscalatorWarning, Routes.CHILDREN),
+            Feature(R.string.feature_notices, Icons.Default.Campaign, Routes.NOTICES),
+            Feature(R.string.feature_leave_requests, Icons.Default.BeachAccess, Routes.LEAVE_REQUESTS),
+            Feature(R.string.feature_events, Icons.Default.Celebration, Routes.EVENTS),
+            Feature(R.string.feature_messages, Icons.AutoMirrored.Filled.Chat, Routes.MESSAGES, FeatureKey.MESSAGING),
+            Feature(R.string.action_library, Icons.AutoMirrored.Filled.LibraryBooks, Routes.LIBRARY_CATALOG, FeatureKey.LIBRARY),
+        )
+        Role.ADMIN -> listOf(
+            Feature(R.string.feature_students, Icons.Default.Groups, Routes.STUDENTS),
+            Feature(R.string.feature_timetable, Icons.Default.Schedule, Routes.timetable()),
+            Feature(R.string.feature_homework, Icons.AutoMirrored.Filled.MenuBook, Routes.homework()),
+            Feature(R.string.feature_notices, Icons.Default.Campaign, Routes.NOTICES),
+            Feature(R.string.feature_leave_requests, Icons.Default.BeachAccess, Routes.LEAVE_REQUESTS),
+            Feature(R.string.feature_events, Icons.Default.Celebration, Routes.EVENTS),
+            Feature(R.string.action_library, Icons.AutoMirrored.Filled.LibraryBooks, Routes.LIBRARY_CATALOG, FeatureKey.LIBRARY),
+            Feature(R.string.feature_account, Icons.Default.Settings, Routes.ACCOUNT),
+        )
+    }
+    return if (entitledFeatures == null) {
+        all
+    } else {
+        all.filter { it.featureKey == null || it.featureKey in entitledFeatures }
+    }
 }
 
 @Composable
@@ -102,6 +118,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val pendingCount by viewModel.pendingAttendanceCount.collectAsStateWithLifecycle()
+    val entitledFeatures by viewModel.entitledFeatures.collectAsStateWithLifecycle()
     val lang = session.preferredLanguage
 
     NotificationPermissionRequest()
@@ -163,7 +180,7 @@ fun HomeScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                items(featuresFor(session.role)) { feature ->
+                items(featuresFor(session.role, entitledFeatures)) { feature ->
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()

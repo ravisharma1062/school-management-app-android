@@ -1,6 +1,7 @@
 package com.school.app.ui.navigation
 
 import android.net.Uri
+import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -13,6 +14,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.school.app.data.auth.Session
 import com.school.app.domain.model.Role
+import com.school.app.ui.account.AccountScreen
+import com.school.app.ui.account.PastDueBanner
+import com.school.app.ui.account.SuspendedScreen
 import com.school.app.ui.attendance.AttendanceHistoryScreen
 import com.school.app.ui.attendance.AttendanceMarkScreen
 import com.school.app.ui.auth.LoginScreen
@@ -60,6 +64,7 @@ object Routes {
     const val TRANSPORT = "transport/{studentId}?name={name}"
     const val LIBRARY = "library/{studentId}?name={name}"
     const val LIBRARY_CATALOG = "library/catalog"
+    const val ACCOUNT = "account"
 
     fun studentDetail(id: String) = "student/$id"
     fun attendanceHistory(id: String, name: String) =
@@ -81,15 +86,33 @@ object Routes {
 @Composable
 fun AppRoot(mainViewModel: MainViewModel = hiltViewModel()) {
     val sessionState by mainViewModel.sessionState.collectAsStateWithLifecycle()
+    val isSuspended by mainViewModel.isSuspended.collectAsStateWithLifecycle()
+    val isPastDue by mainViewModel.isPastDue.collectAsStateWithLifecycle()
     when (val s = sessionState) {
         SessionUi.Loading -> CenteredLoading()
         SessionUi.LoggedOut -> LoginScreen()
-        is SessionUi.LoggedIn -> MainNavHost(session = s.session, onLogout = mainViewModel::logout)
+        is SessionUi.LoggedIn -> {
+            if (isSuspended) {
+                SuspendedScreen(onLogOut = mainViewModel::logout)
+            } else {
+                MainNavHost(
+                    session = s.session,
+                    onLogout = mainViewModel::logout,
+                    isPastDue = isPastDue,
+                    onDismissPastDue = mainViewModel::dismissPastDueBanner,
+                )
+            }
+        }
     }
 }
 
 @Composable
-private fun MainNavHost(session: Session, onLogout: () -> Unit) {
+private fun MainNavHost(
+    session: Session,
+    onLogout: () -> Unit,
+    isPastDue: Boolean,
+    onDismissPastDue: () -> Unit,
+) {
     val navController = rememberNavController()
     val role = session.role
 
@@ -99,6 +122,10 @@ private fun MainNavHost(session: Session, onLogout: () -> Unit) {
     }
 
     CompositionLocalProvider(LocalLanguage provides session.preferredLanguage) {
+    Column {
+    if (isPastDue) {
+        PastDueBanner(onDismiss = onDismissPastDue)
+    }
     NavHost(navController = navController, startDestination = Routes.HOME) {
         composable(Routes.HOME) {
             HomeScreen(
@@ -221,6 +248,10 @@ private fun MainNavHost(session: Session, onLogout: () -> Unit) {
         composable(Routes.LIBRARY_CATALOG) {
             LibraryCatalogScreen(onBack = { navController.popBackStack() })
         }
+        composable(Routes.ACCOUNT) {
+            AccountScreen(onBack = { navController.popBackStack() })
+        }
+    }
     }
     }
 }
