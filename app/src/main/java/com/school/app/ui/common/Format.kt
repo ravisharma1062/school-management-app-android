@@ -5,6 +5,7 @@ import com.school.app.domain.model.AttendanceStatus
 import com.school.app.domain.model.BookIssueStatus
 import com.school.app.domain.model.FeeStatus
 import com.school.app.domain.model.LeaveStatus
+import com.school.app.domain.model.SchoolStatus
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
@@ -54,4 +55,12 @@ fun LeaveStatus.color(): Color = when (this) {
 fun BookIssueStatus.color(): Color = when (this) {
     BookIssueStatus.ISSUED -> Color(0xFF1D4ED8)
     BookIssueStatus.RETURNED -> Color(0xFF15803D)
+}
+
+fun SchoolStatus.color(): Color = when (this) {
+    SchoolStatus.TRIAL -> Color(0xFFB45309)
+    SchoolStatus.ACTIVE -> Color(0xFF15803D)
+    SchoolStatus.PAST_DUE -> Color(0xFFB45309)
+    SchoolStatus.SUSPENDED -> Color(0xFFB91C1C)
+    SchoolStatus.CANCELLED -> Color(0xFF6B7280)
 }

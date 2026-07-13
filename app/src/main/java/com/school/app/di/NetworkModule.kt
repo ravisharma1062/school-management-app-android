@@ -4,6 +4,7 @@ import com.school.app.BuildConfig
 import com.school.app.data.remote.ApiService
 import com.school.app.data.remote.AuthInterceptor
 import com.school.app.data.remote.RefreshApi
+import com.school.app.data.remote.SubscriptionStatusInterceptor
 import com.school.app.data.remote.TokenAuthenticator
 import dagger.Module
 import dagger.Provides
@@ -56,11 +57,13 @@ object NetworkModule {
     fun provideOkHttpClient(
         authInterceptor: AuthInterceptor,
         tokenAuthenticator: TokenAuthenticator,
+        subscriptionStatusInterceptor: SubscriptionStatusInterceptor,
     ): OkHttpClient = OkHttpClient.Builder()
         .connectTimeout(10, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
         .addInterceptor(authInterceptor)
         .authenticator(tokenAuthenticator)
+        .addInterceptor(subscriptionStatusInterceptor)
         .addInterceptor(logging())
         .build()
 

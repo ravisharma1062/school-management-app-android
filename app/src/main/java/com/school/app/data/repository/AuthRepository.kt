@@ -5,6 +5,7 @@ import com.school.app.data.auth.Session
 import com.school.app.data.auth.TokenManager
 import com.school.app.data.map
 import com.school.app.data.remote.ApiService
+import com.school.app.data.remote.SubscriptionStatusHolder
 import com.school.app.data.safeApiCall
 import com.school.app.domain.model.LanguageCode
 import com.school.app.domain.model.LoginRequest
@@ -18,6 +19,7 @@ import javax.inject.Singleton
 class AuthRepository @Inject constructor(
     private val api: ApiService,
     private val tokenManager: TokenManager,
+    private val subscriptionStatusHolder: SubscriptionStatusHolder,
 ) {
     /** Emits null when logged out; the UI reacts by showing the login screen. */
     val session: Flow<Session?> = tokenManager.session
@@ -27,6 +29,7 @@ class AuthRepository @Inject constructor(
         return when (result) {
             is Outcome.Failure -> result
             is Outcome.Success -> {
+                subscriptionStatusHolder.reset()
                 tokenManager.saveTokens(result.data)
                 // Best-effort profile fetch for the greeting; login still counts if it fails.
                 safeApiCall { api.me() }.let { me ->
@@ -39,6 +42,7 @@ class AuthRepository @Inject constructor(
 
     suspend fun logout() {
         tokenManager.clear()
+        subscriptionStatusHolder.reset()
     }
 
     suspend fun updateLanguage(language: LanguageCode): Outcome<LanguageCode> {

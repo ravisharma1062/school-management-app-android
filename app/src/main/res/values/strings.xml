@@ -40,6 +40,7 @@
     <string name="feature_leave_requests">Leave Requests</string>
     <string name="feature_events">Events</string>
     <string name="feature_messages">Messages</string>
+    <string name="feature_account">Account</string>
 
     <!-- Students -->
     <string name="students_title">Students</string>
@@ -212,4 +213,32 @@
     <string name="library_search_none">No books found</string>
     <string name="library_search_prompt">Search the catalog above</string>
     <string name="library_available">%1$d / %2$d available</string>
+
+    <!-- Account / Subscription -->
+    <string name="account_title">Account</string>
+    <string name="account_current_plan">CURRENT PLAN</string>
+    <string name="account_renews">Renews / ends %1$s</string>
+    <string name="account_trial_ends">Trial ends %1$s</string>
+    <string name="account_entitlements">Included features</string>
+    <string name="account_included">Included</string>
+    <string name="account_not_included">Not included</string>
+    <string name="account_limit">limit %1$d</string>
+    <string name="account_status_trial">Trial</string>
+    <string name="account_status_active">Active</string>
+    <string name="account_status_past_due">Past due</string>
+    <string name="account_status_suspended">Suspended</string>
+    <string name="account_status_cancelled">Cancelled</string>
+    <string name="account_feature_email">Email notifications</string>
+    <string name="account_feature_sms">SMS notifications</string>
+    <string name="account_feature_payments">Online fee payments</string>
+    <string name="account_feature_messaging">Parent–teacher messaging</string>
+    <string name="account_feature_transport">Bus transport tracking</string>
+    <string name="account_feature_library">Library management</string>
+    <string name="account_feature_analytics">Analytics dashboard</string>
+    <string name="account_feature_max_students">Student limit</string>
+
+    <!-- Subscription lifecycle -->
+    <string name="subscription_suspended_title">Subscription suspended</string>
+    <string name="subscription_suspended_message">This school\'s subscription is currently suspended. Please contact your administrator or the school\'s billing owner to restore access.</string>
+    <string name="subscription_past_due_message">This school\'s subscription payment is past due. Please arrange payment soon to avoid a service interruption.</string>
 </resources>

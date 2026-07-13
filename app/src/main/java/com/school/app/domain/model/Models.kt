@@ -291,6 +291,37 @@ data class BookIssue(
     val status: BookIssueStatus,
 )
 
+// --- Subscription / Entitlements (Phase MT-2) ---
+enum class PlanCode { BASIC, STANDARD, PREMIUM }
+
+enum class SchoolStatus { TRIAL, ACTIVE, PAST_DUE, SUSPENDED, CANCELLED }
+
+enum class FeatureKey {
+    EMAIL_NOTIFICATIONS,
+    SMS_NOTIFICATIONS,
+    ONLINE_PAYMENTS,
+    MESSAGING,
+    TRANSPORT_TRACKING,
+    LIBRARY,
+    ANALYTICS,
+    MAX_STUDENTS,
+}
+
+data class EntitlementDto(
+    val featureKey: FeatureKey,
+    val enabled: Boolean,
+    val limitValue: Int? = null,
+)
+
+data class SubscriptionDto(
+    val planCode: PlanCode,
+    val planName: String,
+    val status: SchoolStatus,
+    val trialEndsAt: String? = null,
+    val currentPeriodEnd: String? = null,
+    val entitlements: List<EntitlementDto> = emptyList(),
+)
+
 // --- Spring Data Page<T> (subset the app uses) ---
 data class PageResponse<T>(
     val content: List<T> = emptyList(),

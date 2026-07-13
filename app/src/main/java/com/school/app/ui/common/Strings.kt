@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import com.school.app.domain.model.FeatureKey
 import com.school.app.domain.model.LanguageCode
 import java.util.Locale
 
@@ -38,6 +39,21 @@ fun roleLabel(roleName: String): String {
         "TEACHER" -> com.school.app.R.string.role_teacher
         "PARENT" -> com.school.app.R.string.role_parent
         else -> com.school.app.R.string.role_admin
+    }
+    return stringRes(id)
+}
+
+@Composable
+fun featureLabel(featureKey: FeatureKey): String {
+    val id = when (featureKey) {
+        FeatureKey.EMAIL_NOTIFICATIONS -> com.school.app.R.string.account_feature_email
+        FeatureKey.SMS_NOTIFICATIONS -> com.school.app.R.string.account_feature_sms
+        FeatureKey.ONLINE_PAYMENTS -> com.school.app.R.string.account_feature_payments
+        FeatureKey.MESSAGING -> com.school.app.R.string.account_feature_messaging
+        FeatureKey.TRANSPORT_TRACKING -> com.school.app.R.string.account_feature_transport
+        FeatureKey.LIBRARY -> com.school.app.R.string.account_feature_library
+        FeatureKey.ANALYTICS -> com.school.app.R.string.account_feature_analytics
+        FeatureKey.MAX_STUDENTS -> com.school.app.R.string.account_feature_max_students
     }
     return stringRes(id)
 }

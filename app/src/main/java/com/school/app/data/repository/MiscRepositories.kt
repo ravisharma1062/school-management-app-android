@@ -8,6 +8,7 @@ import com.school.app.domain.model.ExamResult
 import com.school.app.domain.model.Fee
 import com.school.app.domain.model.Notice
 import com.school.app.domain.model.PageResponse
+import com.school.app.domain.model.SubscriptionDto
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -51,4 +52,13 @@ class FeeRepository @Inject constructor(
 ) {
     suspend fun forStudent(studentId: String): Outcome<List<Fee>> =
         safeApiCall { api.feesForStudent(studentId) }
+}
+
+/** GET /subscription is ADMIN-only per the backend contract — callers should expect this to
+ * fail for other roles and treat that as "no entitlement data available", not an error to show. */
+@Singleton
+class SubscriptionRepository @Inject constructor(
+    private val api: ApiService,
+) {
+    suspend fun getCurrent(): Outcome<SubscriptionDto> = safeApiCall { api.subscription() }
 }

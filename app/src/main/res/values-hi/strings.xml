@@ -40,6 +40,7 @@
     <string name="feature_leave_requests">अवकाश अनुरोध</string>
     <string name="feature_events">कार्यक्रम</string>
     <string name="feature_messages">संदेश</string>
+    <string name="feature_account">खाता</string>
 
     <!-- Students -->
     <string name="students_title">छात्र</string>
@@ -212,4 +213,32 @@
     <string name="library_search_none">कोई पुस्तक नहीं मिली</string>
     <string name="library_search_prompt">ऊपर सूची में खोजें</string>
     <string name="library_available">%1$d / %2$d उपलब्ध</string>
+
+    <!-- Account / Subscription -->
+    <string name="account_title">खाता</string>
+    <string name="account_current_plan">मौजूदा योजना</string>
+    <string name="account_renews">नवीनीकरण / समाप्ति तिथि %1$s</string>
+    <string name="account_trial_ends">ट्रायल समाप्ति तिथि %1$s</string>
+    <string name="account_entitlements">शामिल सुविधाएं</string>
+    <string name="account_included">शामिल</string>
+    <string name="account_not_included">शामिल नहीं</string>
+    <string name="account_limit">सीमा %1$d</string>
+    <string name="account_status_trial">ट्रायल</string>
+    <string name="account_status_active">सक्रिय</string>
+    <string name="account_status_past_due">भुगतान बकाया</string>
+    <string name="account_status_suspended">निलंबित</string>
+    <string name="account_status_cancelled">रद्द</string>
+    <string name="account_feature_email">ईमेल सूचनाएं</string>
+    <string name="account_feature_sms">SMS सूचनाएं</string>
+    <string name="account_feature_payments">ऑनलाइन फीस भुगतान</string>
+    <string name="account_feature_messaging">अभिभावक-शिक्षक संदेश</string>
+    <string name="account_feature_transport">बस परिवहन ट्रैकिंग</string>
+    <string name="account_feature_library">पुस्तकालय प्रबंधन</string>
+    <string name="account_feature_analytics">विश्लेषण डैशबोर्ड</string>
+    <string name="account_feature_max_students">छात्र सीमा</string>
+
+    <!-- Subscription lifecycle -->
+    <string name="subscription_suspended_title">सदस्यता निलंबित</string>
+    <string name="subscription_suspended_message">इस स्कूल की सदस्यता फ़िलहाल निलंबित है। कृपया पहुंच बहाल करने के लिए अपने प्रशासक या स्कूल के बिलिंग प्रभारी से संपर्क करें।</string>
+    <string name="subscription_past_due_message">इस स्कूल की सदस्यता का भुगतान बकाया है। सेवा में रुकावट से बचने के लिए कृपया जल्द भुगतान करें।</string>
 </resources>
