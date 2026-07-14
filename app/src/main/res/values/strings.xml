@@ -220,6 +220,7 @@
     <string name="account_title">Account</string>
     <string name="account_current_plan">CURRENT PLAN</string>
     <string name="account_billing_owner">Billing owner</string>
+    <string name="account_billing_web_note">To report a payment or view billing details, use the web portal.</string>
     <string name="account_renews">Renews / ends %1$s</string>
     <string name="account_trial_ends">Trial ends %1$s</string>
     <string name="account_entitlements">Included features</string>
