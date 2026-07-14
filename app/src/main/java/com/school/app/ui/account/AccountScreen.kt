@@ -96,6 +96,14 @@ private fun AccountContent(subscription: SubscriptionDto, isBillingOwner: Boolea
                             modifier = Modifier.padding(top = 12.dp),
                         )
                     }
+                    if (subscription.status == SchoolStatus.PAST_DUE || subscription.status == SchoolStatus.SUSPENDED) {
+                        Text(
+                            stringRes(R.string.account_billing_web_note),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = 8.dp),
+                        )
+                    }
                     subscription.trialEndsAt?.let {
                         Text(
                             stringRes(R.string.account_trial_ends, formatDateTime(it)),
