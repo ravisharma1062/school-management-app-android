@@ -1,9 +1,12 @@
 package com.school.app.data.repository
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import com.school.app.data.Outcome
 import com.school.app.data.remote.ApiService
 import com.school.app.data.safeApiCall
+import com.school.app.domain.model.BrandingDto
 import com.school.app.domain.model.ExamResult
 import com.school.app.domain.model.Fee
 import com.school.app.domain.model.Notice
@@ -61,4 +64,22 @@ class SubscriptionRepository @Inject constructor(
     private val api: ApiService,
 ) {
     suspend fun getCurrent(): Outcome<SubscriptionDto> = safeApiCall { api.subscription() }
+}
+
+/** Unlike SubscriptionRepository, GET /branding is readable by every role — the whole app themes
+ * itself from it, not just ADMIN. */
+@Singleton
+class BrandingRepository @Inject constructor(
+    private val api: ApiService,
+) {
+    suspend fun getCurrent(): Outcome<BrandingDto> = safeApiCall { api.branding() }
+
+    suspend fun getLogoBitmap(): Outcome<Bitmap> = safeApiCall {
+        val body = api.brandingLogo()
+        withContext(Dispatchers.IO) {
+            body.byteStream().use { input ->
+                BitmapFactory.decodeStream(input) ?: error("Could not decode logo image")
+            }
+        }
+    }
 }

@@ -4,6 +4,7 @@ import com.school.app.domain.model.Attendance
 import com.school.app.domain.model.AttendanceMarkRequest
 import com.school.app.domain.model.AuthResponse
 import com.school.app.domain.model.Book
+import com.school.app.domain.model.BrandingDto
 import com.school.app.domain.model.BookIssue
 import com.school.app.domain.model.BusLocation
 import com.school.app.domain.model.Conversation
@@ -225,6 +226,14 @@ interface ApiService {
     // --- Subscription (ADMIN only, per the backend contract) ---
     @GET("subscription")
     suspend fun subscription(): SubscriptionDto
+
+    // --- Branding (Phase MT-6a) — readable by every role ---
+    @GET("branding")
+    suspend fun branding(): BrandingDto
+
+    @Streaming
+    @GET("branding/logo")
+    suspend fun brandingLogo(): ResponseBody
 }
 
 /**

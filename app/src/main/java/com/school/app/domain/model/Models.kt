@@ -305,6 +305,7 @@ enum class FeatureKey {
     LIBRARY,
     ANALYTICS,
     MAX_STUDENTS,
+    BRANDING,
 }
 
 data class EntitlementDto(
@@ -320,6 +321,13 @@ data class SubscriptionDto(
     val trialEndsAt: String? = null,
     val currentPeriodEnd: String? = null,
     val entitlements: List<EntitlementDto> = emptyList(),
+)
+
+// --- Branding (Phase MT-6a) --- readable by every role, unlike SubscriptionDto (ADMIN-only).
+data class BrandingDto(
+    val hasLogo: Boolean,
+    val primaryColor: String? = null,
+    val secondaryColor: String? = null,
 )
 
 // --- Spring Data Page<T> (subset the app uses) ---
