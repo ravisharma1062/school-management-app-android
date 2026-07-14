@@ -312,6 +312,7 @@ data class EntitlementDto(
     val featureKey: FeatureKey,
     val enabled: Boolean,
     val limitValue: Int? = null,
+    val currentUsage: Long? = null,
 )
 
 data class SubscriptionDto(

@@ -121,8 +121,9 @@ private fun EntitlementRow(entitlement: EntitlementDto) {
             Column {
                 Text(featureLabel(entitlement.featureKey), style = MaterialTheme.typography.bodyLarge)
                 entitlement.limitValue?.let {
+                    val usage = entitlement.currentUsage
                     Text(
-                        stringRes(R.string.account_limit, it),
+                        if (usage != null) stringRes(R.string.account_usage_limit, usage, it) else stringRes(R.string.account_limit, it),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
