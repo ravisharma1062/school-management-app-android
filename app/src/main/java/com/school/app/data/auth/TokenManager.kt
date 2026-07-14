@@ -1,6 +1,7 @@
 package com.school.app.data.auth
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -23,6 +24,7 @@ data class Session(
     val userName: String?,
     val userEmail: String?,
     val preferredLanguage: LanguageCode = LanguageCode.EN,
+    val isBillingOwner: Boolean = false,
 )
 
 private val Context.sessionDataStore by preferencesDataStore(name = "session")
@@ -43,6 +45,7 @@ class TokenManager @Inject constructor(
         val NAME = stringPreferencesKey("user_name")
         val EMAIL = stringPreferencesKey("user_email")
         val LANGUAGE = stringPreferencesKey("preferred_language")
+        val BILLING_OWNER = booleanPreferencesKey("is_billing_owner")
     }
 
     @Volatile
@@ -60,7 +63,8 @@ class TokenManager @Inject constructor(
             ?: return@map null
         val language = prefs[Keys.LANGUAGE]?.let { runCatching { LanguageCode.valueOf(it) }.getOrNull() }
             ?: LanguageCode.EN
-        Session(access, refresh, role, prefs[Keys.ID], prefs[Keys.NAME], prefs[Keys.EMAIL], language)
+        Session(access, refresh, role, prefs[Keys.ID], prefs[Keys.NAME], prefs[Keys.EMAIL], language,
+            prefs[Keys.BILLING_OWNER] ?: false)
     }
 
     /** Loads persisted tokens into memory; called once at app start. */
@@ -86,6 +90,7 @@ class TokenManager @Inject constructor(
             prefs[Keys.NAME] = user.name
             prefs[Keys.EMAIL] = user.email
             prefs[Keys.LANGUAGE] = user.preferredLanguage.name
+            prefs[Keys.BILLING_OWNER] = user.billingOwner
         }
     }
 

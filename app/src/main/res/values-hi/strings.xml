@@ -219,6 +219,7 @@
     <!-- Account / Subscription -->
     <string name="account_title">खाता</string>
     <string name="account_current_plan">मौजूदा योजना</string>
+    <string name="account_billing_owner">बिलिंग प्रभारी</string>
     <string name="account_renews">नवीनीकरण / समाप्ति तिथि %1$s</string>
     <string name="account_trial_ends">ट्रायल समाप्ति तिथि %1$s</string>
     <string name="account_entitlements">शामिल सुविधाएं</string>
