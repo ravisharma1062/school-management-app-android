@@ -14,11 +14,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.school.app.R
 import com.school.app.domain.model.EntitlementDto
 import com.school.app.domain.model.SchoolStatus
@@ -40,19 +42,20 @@ fun AccountScreen(
     viewModel: AccountViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state
+    val isBillingOwner by viewModel.isBillingOwner.collectAsStateWithLifecycle()
     Scaffold(topBar = { AppTopBar(stringRes(R.string.account_title), onBack) }) { padding ->
         Box(Modifier.padding(padding)) {
             when (val s = state) {
                 UiState.Loading -> CenteredLoading()
                 is UiState.Error -> ErrorState(s.message, onRetry = viewModel::load)
-                is UiState.Ready -> AccountContent(s.data)
+                is UiState.Ready -> AccountContent(s.data, isBillingOwner)
             }
         }
     }
 }
 
 @Composable
-private fun AccountContent(subscription: SubscriptionDto) {
+private fun AccountContent(subscription: SubscriptionDto, isBillingOwner: Boolean) {
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -78,6 +81,13 @@ private fun AccountContent(subscription: SubscriptionDto) {
                             )
                         }
                         StatusChip(statusLabel(subscription.status), subscription.status.color())
+                    }
+                    if (isBillingOwner) {
+                        StatusChip(
+                            stringRes(R.string.account_billing_owner),
+                            MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(top = 8.dp),
+                        )
                     }
                     subscription.currentPeriodEnd?.let {
                         Text(

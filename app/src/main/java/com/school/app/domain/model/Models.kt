@@ -31,6 +31,7 @@ data class User(
     val role: Role,
     val phone: String? = null,
     val preferredLanguage: LanguageCode = LanguageCode.EN,
+    val billingOwner: Boolean = false,
 )
 
 data class UserLanguageUpdateRequest(val preferredLanguage: LanguageCode)
