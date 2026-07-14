@@ -5,6 +5,8 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -46,6 +49,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -61,6 +65,7 @@ import com.school.app.ui.common.AppTopBar
 import com.school.app.ui.common.roleLabel
 import com.school.app.ui.common.stringRes
 import com.school.app.ui.navigation.Routes
+import com.school.app.viewmodel.BrandingUi
 import com.school.app.viewmodel.HomeViewModel
 
 private data class Feature(
@@ -119,6 +124,7 @@ fun HomeScreen(
 ) {
     val pendingCount by viewModel.pendingAttendanceCount.collectAsStateWithLifecycle()
     val entitledFeatures by viewModel.entitledFeatures.collectAsStateWithLifecycle()
+    val branding by viewModel.branding.collectAsStateWithLifecycle()
     val lang = session.preferredLanguage
 
     NotificationPermissionRequest()
@@ -139,6 +145,11 @@ fun HomeScreen(
                 .padding(padding)
                 .padding(16.dp),
         ) {
+            if (branding.logo != null) {
+                BrandingHeader(branding)
+                Spacer(Modifier.height(12.dp))
+            }
+
             Text(
                 stringRes(R.string.home_hello, session.userName ?: session.userEmail ?: "there"),
                 style = MaterialTheme.typography.titleLarge,
@@ -203,6 +214,26 @@ fun HomeScreen(
                 }
             }
         }
+    }
+}
+
+/** The school's logo, shown when MT-6a branding is set (BRANDING entitlement + a logo upload). */
+@Composable
+private fun BrandingHeader(branding: BrandingUi) {
+    val logo = branding.logo ?: return
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Image(
+            bitmap = logo,
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier
+                .size(48.dp)
+                .background(
+                    branding.primaryColor?.copy(alpha = 0.12f) ?: MaterialTheme.colorScheme.primaryContainer,
+                    CircleShape,
+                )
+                .padding(6.dp),
+        )
     }
 }
 

@@ -236,6 +236,7 @@
     <string name="account_feature_library">पुस्तकालय प्रबंधन</string>
     <string name="account_feature_analytics">विश्लेषण डैशबोर्ड</string>
     <string name="account_feature_max_students">छात्र सीमा</string>
+    <string name="account_feature_branding">कस्टम ब्रांडिंग</string>
 
     <!-- Subscription lifecycle -->
     <string name="subscription_suspended_title">सदस्यता निलंबित</string>

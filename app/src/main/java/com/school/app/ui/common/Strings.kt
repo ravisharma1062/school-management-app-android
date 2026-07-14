@@ -54,6 +54,7 @@ fun featureLabel(featureKey: FeatureKey): String {
         FeatureKey.LIBRARY -> com.school.app.R.string.account_feature_library
         FeatureKey.ANALYTICS -> com.school.app.R.string.account_feature_analytics
         FeatureKey.MAX_STUDENTS -> com.school.app.R.string.account_feature_max_students
+        FeatureKey.BRANDING -> com.school.app.R.string.account_feature_branding
     }
     return stringRes(id)
 }

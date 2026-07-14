@@ -236,6 +236,7 @@
     <string name="account_feature_library">Library management</string>
     <string name="account_feature_analytics">Analytics dashboard</string>
     <string name="account_feature_max_students">Student limit</string>
+    <string name="account_feature_branding">Custom branding</string>
 
     <!-- Subscription lifecycle -->
     <string name="subscription_suspended_title">Subscription suspended</string>
