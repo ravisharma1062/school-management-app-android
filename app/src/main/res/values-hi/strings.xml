@@ -223,6 +223,7 @@
     <string name="account_included">शामिल</string>
     <string name="account_not_included">शामिल नहीं</string>
     <string name="account_limit">सीमा %1$d</string>
+    <string name="account_usage_limit">%1$d / %2$d</string>
     <string name="account_status_trial">ट्रायल</string>
     <string name="account_status_active">सक्रिय</string>
     <string name="account_status_past_due">भुगतान बकाया</string>
