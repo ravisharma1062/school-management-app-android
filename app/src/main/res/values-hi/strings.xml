@@ -28,6 +28,8 @@
     <string name="home_log_out">लॉग आउट</string>
     <string name="home_sync_now">अभी सिंक करें</string>
     <string name="home_pending_sync">%1$d उपस्थिति प्रविष्टि सिंक होने की प्रतीक्षा में</string>
+    <string name="home_trial_days_left">आपके निःशुल्क ट्रायल में %1$d दिन शेष हैं</string>
+    <string name="home_trial_upgrade">अपग्रेड के लिए हमसे संपर्क करें</string>
     <string name="role_admin">प्रशासक</string>
     <string name="role_teacher">शिक्षक</string>
     <string name="role_parent">अभिभावक</string>
