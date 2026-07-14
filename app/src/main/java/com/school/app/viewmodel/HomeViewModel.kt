@@ -13,6 +13,7 @@ import com.school.app.data.sync.AttendanceSyncManager
 import com.school.app.domain.model.FeatureKey
 import com.school.app.domain.model.LanguageCode
 import com.school.app.domain.model.Role
+import com.school.app.domain.model.SchoolStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,6 +22,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.Duration
+import java.time.OffsetDateTime
 import javax.inject.Inject
 
 /** Null = no logo uploaded / not entitled; primaryColor null = using the app's default theme color. */
@@ -46,6 +49,10 @@ class HomeViewModel @Inject constructor(
     private val _entitledFeatures = MutableStateFlow<Set<FeatureKey>?>(null)
     val entitledFeatures: StateFlow<Set<FeatureKey>?> = _entitledFeatures.asStateFlow()
 
+    /** MT-6b — null unless this ADMIN's school is on TRIAL with a parseable trialEndsAt. */
+    private val _trialDaysLeft = MutableStateFlow<Int?>(null)
+    val trialDaysLeft: StateFlow<Int?> = _trialDaysLeft.asStateFlow()
+
     private val _branding = MutableStateFlow(BrandingUi())
     val branding: StateFlow<BrandingUi> = _branding.asStateFlow()
 
@@ -59,6 +66,13 @@ class HomeViewModel @Inject constructor(
                         .filter { it.enabled }
                         .map { it.featureKey }
                         .toSet()
+                    val trialEndsAt = result.data.trialEndsAt
+                    if (result.data.status == SchoolStatus.TRIAL && trialEndsAt != null) {
+                        _trialDaysLeft.value = runCatching {
+                            Duration.between(OffsetDateTime.now(), OffsetDateTime.parse(trialEndsAt)).toDays()
+                                .coerceAtLeast(0L).toInt()
+                        }.getOrNull()
+                    }
                 }
             }
         }

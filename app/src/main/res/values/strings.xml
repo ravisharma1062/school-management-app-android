@@ -28,6 +28,8 @@
     <string name="home_log_out">Log out</string>
     <string name="home_sync_now">Sync now</string>
     <string name="home_pending_sync">%1$d attendance mark(s) waiting to sync</string>
+    <string name="home_trial_days_left">%1$d day(s) left in your free trial</string>
+    <string name="home_trial_upgrade">Contact us to upgrade</string>
     <string name="role_admin">Admin</string>
     <string name="role_teacher">Teacher</string>
     <string name="role_parent">Parent</string>

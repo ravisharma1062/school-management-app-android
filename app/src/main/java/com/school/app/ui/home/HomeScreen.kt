@@ -1,7 +1,9 @@
 package com.school.app.ui.home
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -46,6 +48,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -124,6 +129,7 @@ fun HomeScreen(
 ) {
     val pendingCount by viewModel.pendingAttendanceCount.collectAsStateWithLifecycle()
     val entitledFeatures by viewModel.entitledFeatures.collectAsStateWithLifecycle()
+    val trialDaysLeft by viewModel.trialDaysLeft.collectAsStateWithLifecycle()
     val branding by viewModel.branding.collectAsStateWithLifecycle()
     val lang = session.preferredLanguage
 
@@ -160,6 +166,10 @@ fun HomeScreen(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+
+            if (trialDaysLeft != null) {
+                TrialBanner(daysLeft = trialDaysLeft!!)
+            }
 
             if (pendingCount > 0) {
                 Card(
@@ -212,6 +222,42 @@ fun HomeScreen(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+/** MT-6b — dismissible-per-composition awareness banner shown while the school is on TRIAL. */
+@Composable
+private fun TrialBanner(daysLeft: Int) {
+    var dismissed by remember { mutableStateOf(false) }
+    if (dismissed) return
+    val context = LocalContext.current
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp),
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(Modifier.weight(1f)) {
+                Text(stringRes(R.string.home_trial_days_left, daysLeft), style = MaterialTheme.typography.bodyMedium)
+                TextButton(
+                    onClick = {
+                        val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:sales@school.app"))
+                        runCatching { context.startActivity(intent) }
+                    },
+                    modifier = Modifier.padding(top = 0.dp),
+                ) {
+                    Text(stringRes(R.string.home_trial_upgrade))
+                }
+            }
+            IconButton(onClick = { dismissed = true }) {
+                Text("×", style = MaterialTheme.typography.titleLarge)
             }
         }
     }
