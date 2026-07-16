@@ -1,6 +1,6 @@
-# School App — Android (Phase C)
+# School App — Android
 
-Kotlin + Jetpack Compose client for the School Management backend, for **teachers** and **parents** (admins can also sign in). Talks to the same REST API as the web app.
+Kotlin + Jetpack Compose client for the School Management backend, for **teachers** and **parents** (admins can also sign in). Talks to the same tenant-facing REST API as the web app (`school-management-app-ui`) — one school per login. Two other clients talk to this backend but aren't relevant here: the internal operator console and the public marketing site — see [`../PROJECT_KNOWLEDGE_BASE.md`](../PROJECT_KNOWLEDGE_BASE.md) for the full picture, including the multi-tenant/subscription layer this app is entitlement-aware of (below).
 
 ## Tech stack
 
@@ -17,13 +17,15 @@ Kotlin + Jetpack Compose client for the School Management backend, for **teacher
 ```
 app/src/main/java/com/school/app/
 ├── data/
-│   ├── remote/       ApiService (Retrofit), AuthInterceptor, TokenAuthenticator
+│   ├── remote/       ApiService (Retrofit), AuthInterceptor, TokenAuthenticator,
+│   │                 SubscriptionStatusInterceptor + SubscriptionStatusHolder
 │   ├── local/        Room database, DAOs, cached entities + pending attendance queue
 │   ├── auth/         TokenManager (DataStore-backed session)
 │   ├── repository/   One repository per feature; Room-fallback when offline
 │   └── sync/         ConnectivityObserver + AttendanceSyncManager (sync-on-reconnect)
 ├── domain/model/     Plain data classes mirroring the backend DTOs
-├── ui/               Compose screens per feature + navigation
+├── ui/               Compose screens per feature + navigation, incl. ui/account
+│                     (plan/entitlements, branding display, billing-owner badge, billing note)
 ├── viewmodel/        Hilt ViewModels
 ├── di/               Hilt modules (network, database, app scope)
 └── fcm/              FirebaseMessagingService + notification channel
@@ -59,3 +61,17 @@ The client code is in place (`fcm/`), but Firebase is **optional**: the Google S
 | TEACHER | Mark attendance (with offline queue), student directory, timetable, homework (view + post), notices |
 | PARENT | My children → per-child attendance history, exam results, fees, class timetable & homework; notices |
 | ADMIN | Student directory, timetable, homework, notices (management features live in the web app) |
+
+All roles see an **Account** screen (plan/entitlements with usage, the school's branding logo,
+a billing-owner badge, and — when the subscription is `PAST_DUE`/`SUSPENDED` — a short note
+pointing to the web portal to report a payment). This is deliberately **read-only** on Android:
+logo/color editing, the manual-billing claim form, and data export are web-only by design, same
+as most bulk/admin-heavy actions in this app.
+
+## Subscription awareness
+
+`SubscriptionStatusInterceptor`/`SubscriptionStatusHolder` mirror the web app's mechanism:
+every response is watched for the `X-Subscription-Status: PAST_DUE` header and
+`SUBSCRIPTION_SUSPENDED` 403s, driving a blocking suspended screen or a dismissible trial/
+past-due banner on Home. The backend's entitlement checks (`@RequiresEntitlement`) remain the
+real enforcement point — this is UX only.
