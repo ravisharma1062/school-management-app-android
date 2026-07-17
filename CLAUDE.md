@@ -4,6 +4,8 @@ Kotlin + Jetpack Compose client for the School Management App, for **teachers** 
 
 **Sibling repos** (same backend, different clients — not shared code, not in this repo): `school-management-app-backen` (the API), `school-management-app-ui` (web, same tenant model), `school-management-app-operator` (internal platform-team console), `school-management-app-marketing` (public site). Backend DTOs are hand-mirrored here in `domain/model/Models.kt` with no shared schema/codegen.
 
+**If you're editing `domain/model/Models.kt` because a backend DTO changed:** the same DTO likely needs updating in other clients too — check the backend's `CLAUDE.md` "Cross-repo checklist" section for which ones (core school-domain DTOs also need `web/src/types/index.ts`; platform/billing DTOs used on the Account screen may also need `operator`).
+
 ## Stack
 
 Kotlin 2.0.21, AGP, KSP, Gradle Kotlin DSL only. `compileSdk 35`, `targetSdk 35`, `minSdk 26`, Java/Kotlin target 17. Jetpack Compose + Material3, Hilt (DI), Retrofit + OkHttp, Room + DataStore Preferences (local persistence), Navigation-Compose, kotlinx-coroutines, Firebase BOM (messaging, optional), Razorpay Checkout SDK, **osmdroid** (OpenStreetMap-based bus tracking, not Google Maps). Single Gradle module (`:app`).
