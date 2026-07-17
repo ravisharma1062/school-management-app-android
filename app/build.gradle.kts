@@ -94,10 +94,30 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.okhttp.mockwebserver)
+    testImplementation(libs.mockk)
+    // Real org.json for JVM unit tests — the mockable android.jar only ships stubs,
+    // and SubscriptionStatusInterceptor parses 403 bodies with JSONObject.
+    testImplementation(libs.org.json)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+}
+
+// JVM unit tests: two ViewModels (TransportViewModel's location poll, FeesViewModel's
+// RazorpayResultBus collector) launch viewModelScope coroutines that loop/collect forever in
+// production — ViewModel.onCleared() normally cancels them, but tests never call that, so each
+// such test leaked a live coroutine for the rest of the JVM's life unless the test explicitly
+// cancels viewModelScope (which the affected tests now do). Combined with MockK's per-mock
+// ByteBuddy proxy generation, the accumulated garbage was enough to exhaust heap/metaspace and
+// die with OutOfMemoryError (surfacing as native "java.lang.instrument ASSERTION FAILED" /
+// JPLISAgent noise once the JVM couldn't allocate at all). Forking a JVM per test class made
+// things worse here (each fork re-pays Kotlin/Compose/Hilt classloading + agent attach cost),
+// so this sticks with one shared test JVM and just gives it more headroom.
+tasks.withType<Test>().configureEach {
+    maxHeapSize = "3g"
+    jvmArgs("-XX:MaxMetaspaceSize=1g")
 }
